@@ -1,0 +1,95 @@
+@model STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.ProfileViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = Model.RoleTitle;
+    var roleLabel = Model.Role switch {
+        "STUDENT" => "Sinh viên", "ADMIN" => "Quản trị viên",
+        "FACILITIES_STAFF" => "Nhân viên cơ sở vật chất",
+        "SECURITY_GUARD" => "Nhân viên bảo vệ", _ => "Thành viên" };
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@Model.RoleTitle | Student Accommodation</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-shell">
+        <aside class="sidebar">
+            <a class="brand sidebar-brand" href="/"><span class="brand-mark">S</span><span>STUDENT<br />ACCOMMODATION</span></a>
+            <div class="sidebar-section-label">DANH MỤC</div>
+            <div class="role-heading">@Model.RoleTitle</div>
+            <nav aria-label="Danh mục chính">
+                <a class="nav-entry active" href="@Context.Request.Path"><span class="nav-icon" aria-hidden="true">◫</span> Quản lý thông tin</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="sidebar-user"><span class="avatar">@Model.FullName.Substring(0, 1).ToUpperInvariant()</span><span><strong>@Model.FullName</strong><small>@roleLabel</small></span></div>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="logout-button"><span aria-hidden="true">↪</span> Đăng xuất</button>
+                </form>
+            </div>
+        </aside>
+        <main class="dashboard-content">
+            <div class="topline"><span>KHÔNG GIAN CỦA BẠN</span><span class="role-pill">@roleLabel</span></div>
+            <header class="page-header"><div><div class="eyebrow dark">HỒ SƠ CÁ NHÂN</div><h1>Quản lý thông tin</h1><p>Xem và cập nhật thông tin của bạn. Nhấn Lưu thay đổi để ghi xuống cơ sở dữ liệu.</p></div></header>
+            @if (TempData["Success"] is string success) { <div class="success-message" role="status">✓ @success</div> }
+            <form asp-controller="Dashboard" asp-action="Save" method="post" id="profile-form">
+                <div asp-validation-summary="ModelOnly" class="form-error" role="alert"></div>
+                <section class="profile-card">
+                    <div class="card-heading"><span class="card-icon">01</span><div><h2>Thông tin cơ bản</h2><p>Thông tin dùng để nhận diện tài khoản của bạn.</p></div></div>
+                    <div class="form-grid">
+                        <div class="field-group"><label asp-for="FullName">Họ và tên <span class="required">*</span></label><input asp-for="FullName" class="form-control" required /><span asp-validation-for="FullName" class="field-error"></span></div>
+                        <div class="field-group"><label asp-for="Email">Email / tài khoản <span class="required">*</span></label><input asp-for="Email" class="form-control" type="email" required /><span asp-validation-for="Email" class="field-error"></span></div>
+                    </div>
+                </section>
+                <section class="profile-card">
+                    <div class="card-heading"><span class="card-icon">02</span><div><h2>Thông tin @roleLabel.ToLowerInvariant()</h2><p>Chi tiết gắn với vai trò của bạn trong hệ thống.</p></div></div>
+                    <div class="form-grid">
+                        @if (Model.Role == "STUDENT") {
+                            <div class="field-group"><label asp-for="StudentCode">Mã sinh viên <span class="required">*</span></label><input asp-for="StudentCode" class="form-control" required /><span asp-validation-for="StudentCode" class="field-error"></span></div>
+                            <div class="field-group"><label asp-for="Cohort">Khóa học</label><input asp-for="Cohort" class="form-control" placeholder="Thêm khóa học" /></div>
+                            <div class="field-group"><label>Trạng thái học tập</label><input value="@Model.EnrollmentStatus" class="form-control read-only" readonly /><small>Trạng thái này do hệ thống quản lý.</small></div>
+                        } else if (Model.Role == "FACILITIES_STAFF") {
+                            <div class="field-group"><label asp-for="EmployeeCode">Mã nhân viên <span class="required">*</span></label><input asp-for="EmployeeCode" class="form-control" required /><span asp-validation-for="EmployeeCode" class="field-error"></span></div>
+                            <div class="field-group"><label asp-for="Department">Bộ phận</label><input asp-for="Department" class="form-control" placeholder="Thêm bộ phận" /></div>
+                            <div class="field-group"><label asp-for="AssignedArea">Khu vực phụ trách</label><input asp-for="AssignedArea" class="form-control" placeholder="Thêm khu vực" /></div>
+                        } else if (Model.Role == "SECURITY_GUARD") {
+                            <div class="field-group"><label asp-for="EmployeeCode">Mã nhân viên <span class="required">*</span></label><input asp-for="EmployeeCode" class="form-control" required /><span asp-validation-for="EmployeeCode" class="field-error"></span></div>
+                            <div class="field-group"><label asp-for="ShiftLabel">Ca trực</label><input asp-for="ShiftLabel" class="form-control" placeholder="Thêm ca trực" /></div>
+                        } else if (Model.Role == "ADMIN") {
+                            <div class="field-group"><label asp-for="AdminScope">Phạm vi quản trị</label><input asp-for="AdminScope" class="form-control" placeholder="Thêm phạm vi quản trị" /></div>
+                        }
+                    </div>
+                    <p class="field-hint">Có thể xóa nội dung ở các ô không bắt buộc rồi nhấn Lưu thay đổi.</p>
+                </section>
+                <section class="profile-card">
+                    <div class="card-heading"><span class="card-icon">03</span><div><h2>Thông tin bổ sung</h2><p>Thêm, sửa hoặc xóa các mục thông tin riêng của bạn.</p></div></div>
+                    <div id="profile-items">
+                        @for (var i = 0; i < Model.Items.Count; i++) {
+                            var item = Model.Items[i];
+                            <div class="custom-item" data-item-row>
+                                <input type="hidden" name="Items.Index" value="@i" />
+                                <input type="hidden" name="Items[@i].Id" value="@item.Id" />
+                                <input type="hidden" name="Items[@i].Delete" value="@(item.Delete.ToString().ToLowerInvariant())" data-delete-flag />
+                                <div class="field-group"><label>Tên thông tin</label><input name="Items[@i].Label" value="@item.Label" maxlength="80" class="form-control" required /></div>
+                                <div class="field-group"><label>Nội dung</label><input name="Items[@i].Value" value="@item.Value" maxlength="500" class="form-control" required /></div>
+                                <button type="button" class="remove-item" data-remove-item aria-label="Xóa mục thông tin">Xóa</button>
+                            </div>
+                        }
+                    </div>
+                    <button type="button" class="add-item" id="add-profile-item">＋ Thêm thông tin</button>
+                    <span asp-validation-for="Items" class="field-error"></span>
+                </section>
+                <div class="form-actions"><span>Các thay đổi chỉ có hiệu lực sau khi lưu.</span><button type="submit" class="primary-button save-button">Lưu thay đổi <span aria-hidden="true">→</span></button></div>
+            </form>
+        </main>
+    </div>
+    <script src="~/js/profile.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
