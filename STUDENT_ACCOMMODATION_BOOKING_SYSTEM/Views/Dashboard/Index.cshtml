@@ -24,6 +24,11 @@
             <div class="role-heading">@Model.RoleTitle</div>
             <nav aria-label="Danh mục chính">
                 <a class="nav-entry active" href="@Context.Request.Path"><span class="nav-icon" aria-hidden="true">◫</span> Quản lý thông tin</a>
+                @if (Model.Role == "FACILITIES_STAFF")
+                {
+                    <a class="nav-entry" href="/facilities?tab=assets"><span class="nav-icon" aria-hidden="true">📦</span> Thiết bị phòng</a>
+                    <a class="nav-entry" href="/facilities?tab=incidents"><span class="nav-icon" aria-hidden="true">⚠</span> Sự cố thiết bị</a>
+                }
             </nav>
             <div class="sidebar-bottom">
                 <div class="sidebar-user"><span class="avatar">@Model.FullName.Substring(0, 1).ToUpperInvariant()</span><span><strong>@Model.FullName</strong><small>@roleLabel</small></span></div>
