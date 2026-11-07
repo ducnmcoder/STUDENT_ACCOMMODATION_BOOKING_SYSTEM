@@ -86,3 +86,15 @@ h1,h2,h3 { font-family:Manrope,Arial,sans-serif; letter-spacing:-.035em; }
 .simple-card h1 { font-size:1.7rem; font-weight:800; margin:13px 0; }.simple-card p { color:var(--muted); margin-bottom:25px; }
 @media(max-width:800px) { .auth-shell { grid-template-columns:1fr; }.auth-intro { display:none; }.auth-form-side { min-height:100vh; }.auth-mobile-brand { display:flex; align-items:center; gap:9px; margin-bottom:45px; color:var(--navy); font-size:.72rem; font-weight:800; }.auth-mobile-brand .brand-mark { color:#168e77; border-color:#168e77; }.dashboard-shell { display:block; }.sidebar { width:100%; min-width:0; min-height:auto; padding:17px 20px; }.sidebar-brand { margin:0 0 23px; }.sidebar-section-label { display:none; }.role-heading { margin:0 0 8px; }.sidebar-bottom { display:flex; align-items:center; justify-content:space-between; margin-top:15px; }.sidebar-user { border:0; padding:0; }.logout-button { width:auto; padding:8px; }.dashboard-content { padding:20px; }.topline { padding-bottom:14px; } }
 @media(max-width:560px) { .form-grid,.custom-item { grid-template-columns:1fr; }.profile-card { padding:22px 18px; }.custom-item { padding-bottom:16px; border-bottom:1px solid var(--border); }.remove-item { width:100%; }.form-actions { align-items:stretch; flex-direction:column; }.save-button { width:100%; } }
+
+/* Sidebar Sub-Menu Styling đồng bộ */
+.sabs-sidebar { width: 268px; min-width: 268px; }
+.sabs-nav { display: flex; flex-direction: column; gap: 4px; }
+.nav-group-parent { display: flex; flex-direction: column; }
+.nav-chevron { margin-left: auto; font-size: 0.85rem; color: #8faab5; transition: transform 0.2s; }
+.sidebar-sub-menu { display: flex; flex-direction: column; padding: 4px 0 6px 36px; gap: 2px; }
+.sub-nav-entry { display: flex; align-items: center; justify-content: space-between; padding: 7px 12px; font-size: 0.82rem; color: #8faab5; text-decoration: none; border-radius: 7px; transition: all 0.15s; }
+.sub-nav-entry:hover { color: #fff; background: rgba(255,255,255,0.06); }
+.sub-nav-entry.active { color: #a6f0da; background: #1b4652; font-weight: 700; }
+.sub-badge { font-size: 0.7rem; background: #173844; color: #8faab5; padding: 1px 6px; border-radius: 8px; }
+

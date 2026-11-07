@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Data;
+using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Helpers;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.Facilities;
 
 namespace STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Controllers;
@@ -51,10 +52,10 @@ public class FacilitiesController : Controller
         var model = new FacilitiesDashboardViewModel
         {
             ActiveTab = string.IsNullOrWhiteSpace(tab) ? "assets" : tab.ToLower(),
-            StaffName = staff?.Account?.FullName ?? User.Identity?.Name ?? "Nhân viên CSVC",
-            EmployeeCode = staff?.EmployeeCode ?? "FS-UNKNOWN",
-            Department = staff?.Department ?? "Bộ phận Cơ sở vật chất",
-            AssignedArea = staff?.AssignedArea ?? "Toàn khu ký túc xá",
+            StaffName = TextHelper.FixEncoding(staff?.Account?.FullName ?? User.Identity?.Name ?? "Nhân viên CSVC"),
+            EmployeeCode = staff?.EmployeeCode ?? "FS001",
+            Department = TextHelper.FixEncoding(staff?.Department ?? "Bộ phận Cơ sở vật chất"),
+            AssignedArea = TextHelper.FixEncoding(staff?.AssignedArea ?? "Toàn khu ký túc xá"),
             Stats = await _repo.GetOverviewStatsAsync(),
             Rooms = await _repo.GetActiveRoomsAsync(),
             Buildings = await _repo.GetBuildingsAsync()

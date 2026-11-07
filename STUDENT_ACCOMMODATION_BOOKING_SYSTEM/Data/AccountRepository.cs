@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
+using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Helpers;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models;
 
 namespace STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Data;
@@ -31,7 +32,7 @@ public sealed class AccountRepository(IConfiguration configuration)
         command.Parameters.AddWithValue("@email", email.Trim());
         await using var reader = await command.ExecuteReaderAsync();
         if (!await reader.ReadAsync()) return null;
-        return new AccountRecord(reader.GetInt32(0), reader.GetString(1), reader.GetString(2),
+        return new AccountRecord(reader.GetInt32(0), TextHelper.FixEncoding(reader.GetString(1)), reader.GetString(2),
             reader.GetString(3), reader.GetString(4), reader.GetString(5));
     }
 
@@ -92,9 +93,9 @@ public sealed class AccountRepository(IConfiguration configuration)
             string? Field(int i) => reader.IsDBNull(i) ? null : reader.GetString(i);
             profile = new ProfileViewModel
             {
-                FullName = reader.GetString(0), Email = reader.GetString(1), Role = reader.GetString(2),
+                FullName = TextHelper.FixEncoding(reader.GetString(0)), Email = reader.GetString(1), Role = reader.GetString(2),
                 StudentCode = Field(3), Cohort = Field(4), EnrollmentStatus = Field(5),
-                EmployeeCode = Field(6), Department = Field(7), AssignedArea = Field(8),
+                EmployeeCode = Field(6), Department = TextHelper.FixEncoding(Field(7)), AssignedArea = TextHelper.FixEncoding(Field(8)),
                 ShiftLabel = Field(9), AdminScope = Field(10)
             };
         }

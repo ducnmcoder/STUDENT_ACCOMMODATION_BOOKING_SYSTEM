@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Helpers;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.Entities;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.Facilities;
 
@@ -118,6 +119,13 @@ public class FacilitiesAssetRepository : IFacilitiesAssetRepository
                 IncidentCount = a.InspectionItems.Count(i => i.Incident != null)
             })
             .ToListAsync();
+
+        // Khắc phục lỗi font chữ Mojibake tiếng Việt
+        foreach (var item in items)
+        {
+            item.CreatedByStaffName = TextHelper.FixEncoding(item.CreatedByStaffName);
+            item.UpdatedByStaffName = TextHelper.FixEncoding(item.UpdatedByStaffName);
+        }
 
         return new PagedResult<RoomAssetDto>
         {
@@ -412,6 +420,14 @@ public class FacilitiesAssetRepository : IFacilitiesAssetRepository
             })
             .ToListAsync();
 
+        // Khắc phục lỗi font chữ Mojibake tiếng Việt
+        foreach (var inc in items)
+        {
+            inc.GuardName = TextHelper.FixEncoding(inc.GuardName);
+            inc.AdminReviewerName = TextHelper.FixEncoding(inc.AdminReviewerName);
+            inc.IncidentNotes = TextHelper.FixEncoding(inc.IncidentNotes);
+        }
+
         return new PagedResult<IncidentItemDto>
         {
             Items = items,
@@ -426,7 +442,7 @@ public class FacilitiesAssetRepository : IFacilitiesAssetRepository
     /// </summary>
     public async Task<IncidentItemDto?> GetIncidentDetailAsync(long incidentId)
     {
-        return await _db.AssetIncidents
+        var detail = await _db.AssetIncidents
             .AsNoTracking()
             .Include(i => i.InspectionItem)
             .ThenInclude(ii => ii != null ? ii.Asset : null)
@@ -466,6 +482,15 @@ public class FacilitiesAssetRepository : IFacilitiesAssetRepository
                 ReviewedAt = i.ReviewedAt
             })
             .FirstOrDefaultAsync();
+
+        if (detail != null)
+        {
+            detail.GuardName = TextHelper.FixEncoding(detail.GuardName);
+            detail.AdminReviewerName = TextHelper.FixEncoding(detail.AdminReviewerName);
+            detail.IncidentNotes = TextHelper.FixEncoding(detail.IncidentNotes);
+        }
+
+        return detail;
     }
 
     /// <summary>
@@ -498,7 +523,7 @@ public class FacilitiesAssetRepository : IFacilitiesAssetRepository
         var actionText = input.Action switch
         {
             "MAINTENANCE" => "Đưa thiết bị vào bảo trì / sửa chữa",
-            "RESTORE" => "Đã sửa chữa / thay thế xong, đưa vào hoạt động",
+            "RESTORE" => "Đã sửa chữa / thay mới hoàn tất, đưa vào hoạt động",
             "RETIRE" => "Thiết bị hỏng nặng không thể khắc phục, đề xuất thanh lý",
             _ => "Xử lý kỹ thuật"
         };
@@ -517,7 +542,7 @@ public class FacilitiesAssetRepository : IFacilitiesAssetRepository
     /// </summary>
     public async Task<List<AuditLogItemDto>> GetRecentAuditLogsAsync(int count = 10)
     {
-        return await _db.AuditLogs
+        var logs = await _db.AuditLogs
             .AsNoTracking()
             .Include(l => l.PerformedByAccount)
             .Where(l => l.TargetEntity == "ROOM_ASSET")
@@ -534,6 +559,15 @@ public class FacilitiesAssetRepository : IFacilitiesAssetRepository
                 PerformedByName = l.PerformedByAccount != null ? l.PerformedByAccount.FullName : "Tài khoản #" + l.PerformedByAccountId
             })
             .ToListAsync();
+
+        foreach (var log in logs)
+        {
+            log.PerformedByName = TextHelper.FixEncoding(log.PerformedByName);
+            log.BeforeSummary = TextHelper.FixEncoding(log.BeforeSummary);
+            log.AfterSummary = TextHelper.FixEncoding(log.AfterSummary);
+        }
+
+        return logs;
     }
 
     /// <summary>
@@ -567,4 +601,3 @@ public class FacilitiesAssetRepository : IFacilitiesAssetRepository
     }
     #endregion
 }
-
