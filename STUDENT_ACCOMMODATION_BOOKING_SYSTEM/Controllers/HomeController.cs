@@ -9,13 +9,19 @@ public sealed class HomeController : Controller
     [HttpGet("/")]
     public IActionResult Index()
     {
-        if (User.Identity?.IsAuthenticated != true) return RedirectToAction("Login", "Account");
-        var action = User.IsInRole("STUDENT") ? "Student"
-            : User.IsInRole("ADMIN") ? "Admin"
-            : User.IsInRole("FACILITIES_STAFF") ? "FacilitiesStaff"
-            : User.IsInRole("SECURITY_GUARD") ? "SecurityGuard" : null;
-        return action is null ? RedirectToAction("AccessDenied", "Account")
-            : RedirectToAction(action, "Dashboard");
+        // If user is authenticated, redirect to their dashboard
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var action = User.IsInRole("STUDENT") ? "Student"
+                : User.IsInRole("ADMIN") ? "Admin"
+                : User.IsInRole("FACILITIES_STAFF") ? "FacilitiesStaff"
+                : User.IsInRole("SECURITY_GUARD") ? "SecurityGuard" : null;
+            return action is null ? RedirectToAction("AccessDenied", "Account")
+                : RedirectToAction(action, "Dashboard");
+        }
+        
+        // If not authenticated, show landing page
+        return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

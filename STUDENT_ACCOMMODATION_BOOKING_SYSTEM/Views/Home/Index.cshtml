@@ -1,8 +1,430 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "FPT Study Room Booking System";
+    Layout = "_LandingLayout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="particles-bg" id="particles-js"></div>
+    
+    <!-- Animated Gradient Waves -->
+    <div class="gradient-waves">
+        <div class="wave wave-1"></div>
+        <div class="wave wave-2"></div>
+        <div class="wave wave-3"></div>
+    </div>
+    
+    <!-- Floating Icons -->
+    <div class="floating-icons">
+        <div class="float-icon" style="top: 15%; left: 10%;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,108,0,0.6)" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M3 9h18"/>
+            </svg>
+        </div>
+        <div class="float-icon" style="top: 25%; right: 15%;">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+        </div>
+        <div class="float-icon" style="bottom: 20%; left: 15%;">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(255,108,0,0.5)" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+            </svg>
+        </div>
+        <div class="float-icon" style="bottom: 30%; right: 10%;">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        </div>
+        <div class="float-icon" style="top: 40%; left: 8%;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+        </div>
+    </div>
+    
+    <!-- Glowing Dots -->
+    <div class="glowing-dots">
+        <div class="glow-dot" style="top: 12%; left: 25%;"></div>
+        <div class="glow-dot" style="top: 45%; right: 20%;"></div>
+        <div class="glow-dot" style="bottom: 25%; left: 18%;"></div>
+        <div class="glow-dot" style="top: 60%; right: 30%;"></div>
+        <div class="glow-dot" style="top: 30%; left: 45%;"></div>
+    </div>
+    
+    <div class="animated-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    
+    <!-- Hero Info Bar -->
+    <div class="hero-info-bar">
+        <div class="container">
+            <div class="info-items">
+                <div class="info-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    <span>Các tòa: ALPHA • BETA • DELTA • GAMMA</span>
+                </div>
+                <div class="info-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span>Mở cửa 24/7</span>
+                </div>
+                <div class="info-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    <span>Hotline: 1900-xxxx</span>
+                </div>
+                <div class="info-item highlight">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    <span>100% Miễn Phí</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Live Booking Ticker -->
+    <div class="booking-ticker">
+        <div class="ticker-content">
+            <div class="ticker-item">
+                <span class="ticker-icon">🎉</span>
+                <span><strong>Nguyễn Văn A</strong> vừa đặt phòng <strong>AL305</strong></span>
+                <span class="ticker-time">2 phút trước</span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-icon">✨</span>
+                <span><strong>Trần Thị B</strong> vừa đặt phòng <strong>BE207</strong></span>
+                <span class="ticker-time">5 phút trước</span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-icon">🎯</span>
+                <span><strong>Lê Văn C</strong> vừa đặt phòng <strong>DL102</strong></span>
+                <span class="ticker-time">8 phút trước</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hero-content">
+        <div class="container">
+            <div class="row align-items-center min-vh-90">
+                <div class="col-lg-6 hero-text">
+                    <div class="fpt-logo-badge animate-fade-in">
+                        <img src="~/images/FPT.jpg" alt="FPT University" />
+                    </div>
+                    <h1 class="hero-title animate-fade-in">
+                        Hệ Thống Đặt
+                        <span class="gradient-text">Phòng Học & Họp Nhóm</span>
+                    </h1>
+                    <p class="hero-subtitle animate-fade-in-delay-1">
+                        Đặt phòng học, phòng họp nhóm cho sinh viên FPT. 
+                        Không gian hiện đại, tiện nghi đầy đủ. Hoàn toàn MIỄN PHÍ và dễ dàng sử dụng!
+                    </p>
+                    <div class="hero-buttons animate-fade-in-delay-2">
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg pulse-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                                <polyline points="10 17 15 12 10 7"/>
+                                <line x1="15" y1="12" x2="3" y2="12"/>
+                            </svg>
+                            <span>Đăng Nhập & Đặt Phòng</span>
+                        </a>
+                        <a href="#features" class="btn btn-outline-light btn-lg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                            Tìm Hiểu Thêm
+                        </a>
+                    </div>
+                    <div class="hero-stats animate-fade-in-delay-3">
+                        <div class="stat-item">
+                            <div class="stat-icon">📚</div>
+                            <div class="stat-number counter" data-target="50">0</div>
+                            <div class="stat-label">Phòng Học</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-number counter" data-target="1200">0</div>
+                            <div class="stat-label">Sinh Viên</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">✨</div>
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Miễn Phí</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Popular Rooms Mini Showcase -->
+                    <div class="popular-rooms-mini mt-4">
+                        <h5 class="mini-title">🔥 Phòng Đang Hot</h5>
+                        <div class="mini-rooms-grid">
+                            <div class="mini-room-card">
+                                <div class="mini-room-name">AL305</div>
+                                <div class="mini-room-status available">Còn trống</div>
+                            </div>
+                            <div class="mini-room-card">
+                                <div class="mini-room-name">BE207</div>
+                                <div class="mini-room-status available">Còn trống</div>
+                            </div>
+                            <div class="mini-room-card">
+                                <div class="mini-room-name">DL102</div>
+                                <div class="mini-room-status busy">Đang dùng</div>
+                            </div>
+                            <div class="mini-room-card">
+                                <div class="mini-room-name">GA401</div>
+                                <div class="mini-room-status available">Còn trống</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 hero-image animate-fade-in-delay-2">
+                    <div class="room-showcase">
+                        <div class="room-card-3d">
+                            <div class="room-badge pulse">Phòng Nổi Bật</div>
+                            <div class="room-image-modern">
+                                <div class="room-illustration">
+                                    <svg viewBox="0 0 400 300" width="100%" height="300">
+                                        <defs>
+                                            <linearGradient id="gradRoom" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#003B71"/>
+                                                <stop offset="50%" style="stop-color:#0066CC"/>
+                                                <stop offset="100%" style="stop-color:#FF6C00"/>
+                                            </linearGradient>
+                                            <filter id="glow">
+                                                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                                <feMerge>
+                                                    <feMergeNode in="coloredBlur"/>
+                                                    <feMergeNode in="SourceGraphic"/>
+                                                </feMerge>
+                                            </filter>
+                                        </defs>
+                                        <rect width="400" height="300" fill="url(#gradRoom)" opacity="0.9"/>
+                                        
+                                        <!-- Table -->
+                                        <ellipse cx="200" cy="180" rx="80" ry="20" fill="rgba(255,255,255,0.2)"/>
+                                        <rect x="120" y="160" width="160" height="20" rx="10" fill="rgba(255,255,255,0.25)"/>
+                                        
+                                        <!-- Chairs -->
+                                        <circle cx="160" cy="140" r="15" fill="rgba(255,108,0,0.6)" filter="url(#glow)"/>
+                                        <circle cx="240" cy="140" r="15" fill="rgba(255,108,0,0.6)" filter="url(#glow)"/>
+                                        <circle cx="160" cy="200" r="15" fill="rgba(255,108,0,0.6)" filter="url(#glow)"/>
+                                        <circle cx="240" cy="200" r="15" fill="rgba(255,108,0,0.6)" filter="url(#glow)"/>
+                                        
+                                        <!-- Screen/Board -->
+                                        <rect x="100" y="50" width="200" height="60" rx="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+                                        <text x="200" y="85" text-anchor="middle" fill="white" font-size="16" font-weight="bold">FPT Study Room</text>
+                                        
+                                        <!-- Decorative elements -->
+                                        <circle cx="50" cy="50" r="30" fill="rgba(255,108,0,0.2)" filter="url(#glow)">
+                                            <animate attributeName="r" values="30;35;30" dur="3s" repeatCount="indefinite"/>
+                                        </circle>
+                                        <circle cx="350" cy="250" r="40" fill="rgba(0,59,113,0.2)" filter="url(#glow)">
+                                            <animate attributeName="r" values="40;45;40" dur="4s" repeatCount="indefinite"/>
+                                        </circle>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="room-info-modern">
+                                <h4>Phòng Học Nhóm BE207</h4>
+                                <p class="room-building">📍 Tòa nhà BETA - Tầng 2</p>
+                                <div class="room-features">
+                                    <span class="feature-tag">📊 Projector</span>
+                                    <span class="feature-tag">💻 WiFi</span>
+                                    <span class="feature-tag">❄️ Điều hòa</span>
+                                    <span class="feature-tag">🪑 Bàn ghế</span>
+                                </div>
+                                <div class="room-capacity">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
+                                    <span>8-12 người</span>
+                                </div>
+                                <div class="room-price-tag">
+                                    <span class="price-free">MIỄN PHÍ</span>
+                                    <span class="price-desc">Phục vụ sinh viên FPT</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-indicator">
+        <div class="mouse"></div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge">Tính Năng</span>
+            <h2 class="section-title">Tại Sao Chọn Hệ Thống Của Chúng Tôi?</h2>
+            <p class="section-subtitle">Mọi tiện ích cho việc học tập và làm việc nhóm hiệu quả</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M3 9h18"/>
+                            <path d="M9 21V9"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Đặt Phòng Dễ Dàng</h3>
+                    <p class="feature-description">Giao diện thân thiện, đặt phòng chỉ trong vài giây. Xem lịch trống và chọn khung giờ phù hợp</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Quản Lý Thời Gian</h3>
+                    <p class="feature-description">Xem lịch sử đặt phòng, nhận thông báo nhắc nhở, và quản lý booking một cách chuyên nghiệp</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Tiện Ích Đầy Đủ</h3>
+                    <p class="feature-description">Projector, Whiteboard, WiFi tốc độ cao, điều hòa và bàn ghế thoải mái cho mọi nhóm</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">100% Miễn Phí</h3>
+                    <p class="feature-description">Phục vụ hoàn toàn miễn phí cho sinh viên FPT. Không có chi phí ẩn hay phí đặt cọc</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="steps-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge">Quy Trình</span>
+            <h2 class="section-title">Cách Thức Hoạt Động</h2>
+            <p class="section-subtitle">Đặt phòng học chỉ với 3 bước đơn giản</p>
+        </div>
+        <div class="row g-4 position-relative">
+            <div class="process-line"></div>
+            <div class="col-md-4">
+                <div class="step-card-modern">
+                    <div class="step-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="step-number">01</div>
+                    <h3 class="step-title">Đăng Nhập</h3>
+                    <p class="step-description">Sử dụng tài khoản FPT của bạn để đăng nhập vào hệ thống</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card-modern">
+                    <div class="step-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="step-number">02</div>
+                    <h3 class="step-title">Chọn Phòng & Giờ</h3>
+                    <p class="step-description">Xem danh sách phòng, chọn thời gian phù hợp với lịch của bạn</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card-modern">
+                    <div class="step-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div class="step-number">03</div>
+                    <h3 class="step-title">Xác Nhận & Sử Dụng</h3>
+                    <p class="step-description">Nhận xác nhận qua email và đến phòng đúng giờ để bắt đầu học tập</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-animation-bg"></div>
+    <div class="container">
+        <div class="cta-content">
+            <div class="cta-icon pulse">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+            </div>
+            <h2 class="cta-title">Sẵn Sàng Đặt Phòng Học?</h2>
+            <p class="cta-subtitle">Hàng trăm sinh viên đã sử dụng hệ thống để tổ chức học nhóm hiệu quả mỗi ngày</p>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-cta btn-lg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                    <polyline points="10 17 15 12 10 7"/>
+                    <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                Bắt Đầu Ngay - Miễn Phí
+            </a>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/landing.css" />
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="~/js/landing.js"></script>
+}
