@@ -23,7 +23,25 @@
             <div class="sidebar-section-label">DANH MỤC</div>
             <div class="role-heading">@Model.RoleTitle</div>
             <nav aria-label="Danh mục chính">
-                <a class="nav-entry active" href="@Context.Request.Path"><span class="nav-icon" aria-hidden="true">◫</span> Quản lý thông tin</a>
+                <a class="nav-entry active" href="@Context.Request.Path">
+                    <span class="nav-icon" aria-hidden="true">◫</span>
+                    Quản lý thông tin
+                </a>
+                @if (Model.Role == "SECURITY_GUARD")
+                {
+                    <a class="nav-entry" href="/security-guard/bookings">
+                        <span class="nav-icon" aria-hidden="true">☷</span>
+                        Danh sách lượt đến
+                    </a>
+                    <a class="nav-entry" href="/security-guard/checkouts">
+                        <span class="nav-icon" aria-hidden="true">☷</span>
+                        Check-out
+                    </a>
+                    <a class="nav-entry" href="/security-guard/inspections">
+                        <span class="nav-icon" aria-hidden="true">☷</span>
+                        Kiểm tra thiết bị
+                    </a>
+                }
             </nav>
             <div class="sidebar-bottom">
                 <div class="sidebar-user"><span class="avatar">@Model.FullName.Substring(0, 1).ToUpperInvariant()</span><span><strong>@Model.FullName</strong><small>@roleLabel</small></span></div>

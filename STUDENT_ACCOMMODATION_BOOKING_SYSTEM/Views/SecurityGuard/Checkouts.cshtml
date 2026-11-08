@@ -1,0 +1,182 @@
+﻿@model List<STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.GuardBookingViewModel>
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Check-out";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Check-out</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/guard-dialog.css" asp-append-version="true" />
+</head>
+
+<body class="dashboard-page">
+
+    <div class="dashboard-shell">
+
+        <aside class="sidebar">
+
+            <a class="brand sidebar-brand" href="/security-guard">
+                <span class="brand-mark">S</span>
+                <span>
+                    STUDENT<br />
+                    ACCOMMODATION
+                </span>
+            </a>
+
+            <div class="sidebar-section-label">
+                DANH MỤC
+            </div>
+
+            <div class="role-heading">
+                SECURITY GUARD DASHBOARD
+            </div>
+
+            <nav aria-label="Danh mục chính">
+                <a class="nav-entry" href="/security-guard">
+                    <span class="nav-icon" aria-hidden="true">◫</span>
+                    Quản lý thông tin
+                </a>
+
+                <a class="nav-entry" href="/security-guard/bookings">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    Danh sách lượt đến
+                </a>
+
+                <a class="nav-entry active" href="/security-guard/checkouts">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    Check-out
+                </a>
+
+                <a class="nav-entry" href="/security-guard/inspections">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    Kiểm tra thiết bị
+                </a>
+            </nav>
+
+
+        </aside>
+
+        <main class="dashboard-content">
+
+            <header class="page-header">
+                <div>
+                    <div class="eyebrow dark">
+                        NHÂN VIÊN BẢO VỆ
+                    </div>
+
+                    <h1>Check-out</h1>
+
+                    <p>
+                        Danh sách booking đã check-in,
+                        đang chờ trả phòng.
+                    </p>
+                </div>
+            </header>
+
+            <section class="profile-card">
+
+                @if (Model.Count == 0)
+                {
+                    <p>
+                        Không có booking nào đang chờ check-out.
+                    </p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-striped align-middle">
+
+                            <thead>
+                                <tr>
+                                    <th>Mã booking</th>
+                                    <th>Sinh viên</th>
+                                    <th>Mã SV</th>
+                                    <th>Phòng</th>
+                                    <th>Bắt đầu</th>
+                                    <th>Kết thúc</th>
+                                    <th>Check-in</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var booking in Model)
+                                {
+                                    <tr>
+                                        <td>@booking.BookingId</td>
+
+                                        <td>@booking.StudentName</td>
+
+                                        <td>@booking.StudentCode</td>
+
+                                        <td>@booking.RoomCode</td>
+
+                                        <td>
+                                            @booking.StartAt.ToString("dd/MM/yyyy HH:mm")
+                                        </td>
+
+                                        <td>
+                                            @booking.EndAt.ToString("dd/MM/yyyy HH:mm")
+                                        </td>
+
+                                        <td>
+                                            @booking.CheckInOutcome
+                                        </td>
+
+                                        <td>
+                                            <form class="checkout-form"
+                                                  action="@($"/api/security-guard/bookings/{booking.BookingId}/check-out")"
+                                                  method="post">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-success btn-sm">
+                                                    Check-out
+                                                </button>
+
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </section>
+
+        </main>
+
+    </div>
+
+    
+    <script src="~/js/guard-dialog.js" asp-append-version="true"></script>
+
+    <script>
+        GuardDialog.bindPostForms(
+        ".checkout-form",
+        "Xác nhận check-out và hoàn tất booking này?",
+        "reload"
+        );
+    </script>
+
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+﻿@model STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.GuardInspectionForm
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Biên bản kiểm tra";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Biên bản kiểm tra</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/guard-dialog.css" asp-append-version="true" />
+</head>
+
+<body class="dashboard-page">
+    <div class="dashboard-shell">
+        <aside class="sidebar">
+            <a class="brand sidebar-brand" href="/security-guard">
+                <span class="brand-mark">S</span>
+                <span>STUDENT<br />ACCOMMODATION</span>
+            </a>
+
+            <div class="sidebar-section-label">DANH MỤC</div>
+            <div class="role-heading">SECURITY GUARD DASHBOARD</div>
+
+            <nav aria-label="Danh mục chính">
+                <a class="nav-entry" href="/security-guard">
+                    <span class="nav-icon" aria-hidden="true">◫</span>
+                    Quản lý thông tin
+                </a>
+
+                <a class="nav-entry" href="/security-guard/bookings">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    Danh sách lượt đến
+                </a>
+
+                <a class="nav-entry" href="/security-guard/checkouts">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    Check-out
+                </a>
+
+                <a class="nav-entry active" href="/security-guard/inspections">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    Kiểm tra thiết bị
+                </a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-content">
+            <header class="page-header">
+                <div>
+                    <div class="eyebrow dark">NHÂN VIÊN BẢO VỆ</div>
+                    <h1>Biên bản kiểm tra thiết bị</h1>
+                    <p>
+                        Booking #@Model.BookingId |
+                        Phòng @Model.RoomCode |
+                        @Model.StudentName
+                    </p>
+                    <p>
+                        Loại kiểm tra:
+                        <strong>@(Model.Phase == "IN" ? "Nhận phòng (IN)" : "Trả phòng (OUT)")</strong>
+                    </p>
+                </div>
+            </header>
+
+            <section class="profile-card">
+                <form id="inspection-form"
+                      method="post"
+                      action="/api/security-guard/inspections">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="BookingId" value="@Model.BookingId" />
+                    <input type="hidden" name="Phase" value="@Model.Phase" />
+
+                    <h4>Danh sách thiết bị trong phòng</h4>
+
+                    @if (Model.Items.Count == 0)
+                    {
+                        <p>Phòng này chưa có thiết bị được đăng ký.</p>
+                    }
+                    else
+                    {
+                        @for (int i = 0; i < Model.Items.Count; i++)
+                        {
+                            var item = Model.Items[i];
+
+                            <div class="border rounded p-3 mb-3">
+                                <input type="hidden"
+                                       name="Items[@i].AssetId"
+                                       value="@item.AssetId" />
+
+                                <h5>@item.AssetName</h5>
+                                <p class="text-muted">
+                                    Mã: @item.AssetTag |
+                                    Tình trạng đăng ký: @item.RegisteredCondition
+                                </p>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Tình trạng thực tế</label>
+                                    <select name="Items[@i].ObservedState"
+                                            class="form-select">
+                                        <option value="OK">Bình thường (OK)</option>
+                                        <option value="DAMAGED">Hư hỏng (DAMAGED)</option>
+                                        <option value="MISSING">Thất lạc (MISSING)</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Ghi chú thiết bị</label>
+                                    <textarea name="Items[@i].ObservationNotes"
+                                              class="form-control"
+                                              rows="2"
+                                              maxlength="300"
+                                              placeholder="Nhập ghi chú nếu cần"></textarea>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú chung của biên bản</label>
+                        <textarea name="InspectionNotes"
+                                  class="form-control"
+                                  rows="3"
+                                  maxlength="300"
+                                  placeholder="Nhập ghi chú chung nếu cần"></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            Lưu biên bản
+                        </button>
+
+                        <a href="/security-guard/inspections"
+                           class="btn btn-secondary">
+                            Quay lại
+                        </a>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    
+    <script src="~/js/guard-dialog.js" asp-append-version="true"></script>
+
+    <script>
+        GuardDialog.bindPostForms(
+        "#inspection-form",
+        "Xác nhận lưu biên bản kiểm tra thiết bị?",
+        "/security-guard/inspections"
+        );
+    </script>
+
+</body>
+</html>
