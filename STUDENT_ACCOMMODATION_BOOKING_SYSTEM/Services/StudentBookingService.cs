@@ -67,7 +67,7 @@ public sealed class StudentBookingService(BookingDbContext db, IConfiguration co
         return result;
     }
 
-    private async Task<IReadOnlyList<RoomItem>> WithAssetsAsync(List<Room> rooms)
+    private async Task<IReadOnlyList<RoomItem>> WithAssetsAsync(List<StudentRoomRecord> rooms)
     {
         var ids = rooms.Select(r => r.Id).ToArray();
         if (ids.Length == 0) return [];

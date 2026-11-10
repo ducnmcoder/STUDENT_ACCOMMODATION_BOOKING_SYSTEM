@@ -4,17 +4,17 @@ namespace STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Data;
 
 public sealed class BookingDbContext(DbContextOptions<BookingDbContext> options) : DbContext(options)
 {
-    public DbSet<Room> Rooms => Set<Room>();
-    public DbSet<RoomAsset> RoomAssets => Set<RoomAsset>();
-    public DbSet<Booking> Bookings => Set<Booking>();
-    public DbSet<Student> Students => Set<Student>();
-    public DbSet<BookingPolicy> Policies => Set<BookingPolicy>();
-    public DbSet<WeeklyReputation> WeeklyReputations => Set<WeeklyReputation>();
-    public DbSet<ReputationEvent> ReputationEvents => Set<ReputationEvent>();
+    public DbSet<StudentRoomRecord> Rooms => Set<StudentRoomRecord>();
+    public DbSet<StudentRoomAssetRecord> RoomAssets => Set<StudentRoomAssetRecord>();
+    public DbSet<StudentBookingRecord> Bookings => Set<StudentBookingRecord>();
+    public DbSet<StudentRecord> Students => Set<StudentRecord>();
+    public DbSet<BookingPolicyRecord> Policies => Set<BookingPolicyRecord>();
+    public DbSet<WeeklyReputationRecord> WeeklyReputations => Set<WeeklyReputationRecord>();
+    public DbSet<ReputationEventRecord> ReputationEvents => Set<ReputationEventRecord>();
 
     protected override void OnModelCreating(ModelBuilder model)
     {
-        model.Entity<Room>(e => {
+        model.Entity<StudentRoomRecord>(e => {
             e.ToTable("ROOM", "dbo"); e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("room_id");
             e.Property(x => x.Code).HasColumnName("room_code");
@@ -23,14 +23,14 @@ public sealed class BookingDbContext(DbContextOptions<BookingDbContext> options)
             e.Property(x => x.Capacity).HasColumnName("capacity");
             e.Property(x => x.Status).HasColumnName("room_status");
         });
-        model.Entity<RoomAsset>(e => {
+        model.Entity<StudentRoomAssetRecord>(e => {
             e.ToTable("ROOM_ASSET", "dbo"); e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("asset_id");
             e.Property(x => x.RoomId).HasColumnName("room_id");
             e.Property(x => x.Name).HasColumnName("asset_name");
             e.Property(x => x.Status).HasColumnName("asset_status");
         });
-        model.Entity<Booking>(e => {
+        model.Entity<StudentBookingRecord>(e => {
             e.ToTable("BOOKING", "dbo"); e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("booking_id");
             e.Property(x => x.StudentId).HasColumnName("student_id");
@@ -41,12 +41,12 @@ public sealed class BookingDbContext(DbContextOptions<BookingDbContext> options)
             e.Property(x => x.Purpose).HasColumnName("purpose");
             e.Property(x => x.CreatedAt).HasColumnName("created_at");
         });
-        model.Entity<Student>(e => {
+        model.Entity<StudentRecord>(e => {
             e.ToTable("STUDENT", "dbo"); e.HasKey(x => x.AccountId);
             e.Property(x => x.AccountId).HasColumnName("account_id");
             e.Property(x => x.EnrollmentStatus).HasColumnName("enrollment_status");
         });
-        model.Entity<BookingPolicy>(e => {
+        model.Entity<BookingPolicyRecord>(e => {
             e.ToTable("POLICY", "dbo"); e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("policy_id");
             e.Property(x => x.EffectiveFrom).HasColumnName("effective_from");
@@ -55,14 +55,14 @@ public sealed class BookingDbContext(DbContextOptions<BookingDbContext> options)
             e.Property(x => x.MonthlyInitialScore).HasColumnName("monthly_initial_score");
             e.Property(x => x.WeeklyBookingLimit).HasColumnName("weekly_booking_limit");
         });
-        model.Entity<WeeklyReputation>(e => {
+        model.Entity<WeeklyReputationRecord>(e => {
             e.ToTable("WEEKLY_REPUTATION", "dbo"); e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("weekly_reputation_id");
             e.Property(x => x.StudentId).HasColumnName("student_id");
             e.Property(x => x.WeekStart).HasColumnName("week_start");
             e.Property(x => x.CurrentScore).HasColumnName("current_score");
         });
-        model.Entity<ReputationEvent>(e => {
+        model.Entity<ReputationEventRecord>(e => {
             e.ToTable("REPUTATION_EVENT", "dbo"); e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("event_id");
             e.Property(x => x.WeeklyReputationId).HasColumnName("weekly_reputation_id");
@@ -72,7 +72,7 @@ public sealed class BookingDbContext(DbContextOptions<BookingDbContext> options)
     }
 }
 
-public sealed class Room
+public sealed class StudentRoomRecord
 {
     public int Id { get; set; }
     public string Code { get; set; } = "";
@@ -82,7 +82,7 @@ public sealed class Room
     public string Status { get; set; } = "";
 }
 
-public sealed class RoomAsset
+public sealed class StudentRoomAssetRecord
 {
     public long Id { get; set; }
     public int RoomId { get; set; }
@@ -90,7 +90,7 @@ public sealed class RoomAsset
     public string Status { get; set; } = "";
 }
 
-public sealed class Booking
+public sealed class StudentBookingRecord
 {
     public long Id { get; set; }
     public int StudentId { get; set; }
@@ -102,13 +102,13 @@ public sealed class Booking
     public DateTime CreatedAt { get; set; }
 }
 
-public sealed class Student
+public sealed class StudentRecord
 {
     public int AccountId { get; set; }
     public string EnrollmentStatus { get; set; } = "";
 }
 
-public sealed class BookingPolicy
+public sealed class BookingPolicyRecord
 {
     public int Id { get; set; }
     public DateTime EffectiveFrom { get; set; }
@@ -118,7 +118,7 @@ public sealed class BookingPolicy
     public int WeeklyBookingLimit { get; set; }
 }
 
-public sealed class WeeklyReputation
+public sealed class WeeklyReputationRecord
 {
     public long Id { get; set; }
     public int StudentId { get; set; }
@@ -126,7 +126,7 @@ public sealed class WeeklyReputation
     public int CurrentScore { get; set; }
 }
 
-public sealed class ReputationEvent
+public sealed class ReputationEventRecord
 {
     public long Id { get; set; }
     public long WeeklyReputationId { get; set; }

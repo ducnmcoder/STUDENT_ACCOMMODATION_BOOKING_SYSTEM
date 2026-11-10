@@ -16,6 +16,9 @@ builder.Services.AddDbContext<AccommodationDbContext>(options =>
 builder.Services.AddScoped<AccountRepository>();
 
 builder.Services.AddScoped<IFacilitiesAssetRepository, FacilitiesAssetRepository>();
+builder.Services.AddDbContext<BookingDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AccommodationDb")));
+builder.Services.AddScoped<StudentBookingService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
