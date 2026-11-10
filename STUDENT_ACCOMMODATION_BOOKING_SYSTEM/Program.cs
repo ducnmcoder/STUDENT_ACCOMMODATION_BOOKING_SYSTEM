@@ -7,10 +7,16 @@ using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
-builder.Services.AddScoped<AccountRepository>();
-builder.Services.AddDbContext<BookingDbContext>(options =>
+
+// Cấu hình kết nối SQL Server qua Entity Framework Core
+builder.Services.AddDbContext<AccommodationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AccommodationDb")));
-builder.Services.AddScoped<StudentBookingService>();
+
+// Đăng ký các Repository
+builder.Services.AddScoped<AccountRepository>();
+
+builder.Services.AddScoped<IFacilitiesAssetRepository, FacilitiesAssetRepository>();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
