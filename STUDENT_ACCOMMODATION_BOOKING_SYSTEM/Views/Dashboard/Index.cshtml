@@ -39,6 +39,12 @@
                         <a class="nav-entry" asp-controller="StudentRooms" asp-action="Index"><span class="nav-icon" aria-hidden="true">▦</span> Danh sách phòng</a>
                         <a class="nav-entry" asp-controller="StudentRooms" asp-action="MyBookings"><span class="nav-icon" aria-hidden="true">◷</span> Đặt phòng của tôi</a>
                     }
+                    @if (Model.Role == "SECURITY_GUARD")
+                    {
+                        <a class="nav-entry" asp-controller="SecurityGuard" asp-action="Bookings"><span class="nav-icon" aria-hidden="true">☷</span> Danh sách lượt đến</a>
+                        <a class="nav-entry" asp-controller="SecurityGuard" asp-action="Checkouts"><span class="nav-icon" aria-hidden="true">☷</span> Check-out</a>
+                        <a class="nav-entry" asp-controller="GuardInspection" asp-action="Index"><span class="nav-icon" aria-hidden="true">☷</span> Kiểm tra thiết bị</a>
+                    }
                 </nav>
                 <div class="sidebar-bottom">
                     <div class="sidebar-user"><span class="avatar">@(string.IsNullOrEmpty(displayName) ? "U" : displayName.Substring(0, 1).ToUpperInvariant())</span><span><strong>@displayName</strong><small>@roleLabel</small></span></div>
