@@ -24,6 +24,10 @@
             <div class="role-heading">@Model.RoleTitle</div>
             <nav aria-label="Danh mục chính">
                 <a class="nav-entry active" href="@Context.Request.Path"><span class="nav-icon" aria-hidden="true">◫</span> Quản lý thông tin</a>
+                @if (Model.Role == "STUDENT") {
+                    <a class="nav-entry" asp-controller="StudentRooms" asp-action="Index"><span class="nav-icon" aria-hidden="true">▦</span> Danh sách phòng</a>
+                    <a class="nav-entry" asp-controller="StudentRooms" asp-action="MyBookings"><span class="nav-icon" aria-hidden="true">◷</span> Đặt phòng của tôi</a>
+                }
             </nav>
             <div class="sidebar-bottom">
                 <div class="sidebar-user"><span class="avatar">@Model.FullName.Substring(0, 1).ToUpperInvariant()</span><span><strong>@Model.FullName</strong><small>@roleLabel</small></span></div>
