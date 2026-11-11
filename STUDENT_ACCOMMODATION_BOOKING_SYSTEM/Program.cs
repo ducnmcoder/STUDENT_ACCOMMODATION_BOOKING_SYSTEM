@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 builder.Services.AddScoped<AccountRepository>();
+builder.Services.AddScoped<ReputationRepository>();
+builder.Services.AddScoped<NoShowService>();
+builder.Services.AddHostedService<NoShowBackgroundService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

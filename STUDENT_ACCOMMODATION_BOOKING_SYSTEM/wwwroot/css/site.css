@@ -1,13 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
-
 :root { --ink:#202b39; --muted:#718096; --navy:#122b3b; --navy-deep:#0d2230; --teal:#24a990; --border:#e5eaf0; --surface:#f5f7f9; }
 * { box-sizing:border-box; }
 html,body { min-height:100%; }
-body { margin:0; color:var(--ink); font-family:'DM Sans',Arial,sans-serif; }
-h1,h2,h3 { font-family:Manrope,Arial,sans-serif; letter-spacing:-.035em; }
+body { margin:0; color:var(--ink); font-family:"Segoe UI",Tahoma,Arial,sans-serif; }
+h1,h2,h3 { font-family:"Segoe UI",Tahoma,Arial,sans-serif; letter-spacing:-.025em; }
 .eyebrow { color:#8be0ca; font-size:.72rem; font-weight:800; letter-spacing:.17em; }
 .eyebrow.dark { color:#21947f; }
-.brand { display:flex; align-items:center; gap:12px; color:#fff; font-family:Manrope,Arial,sans-serif; font-size:.76rem; font-weight:800; line-height:1.3; letter-spacing:.07em; text-decoration:none; }
+.brand { display:flex; align-items:center; gap:12px; color:#fff; font-family:"Segoe UI",Tahoma,Arial,sans-serif; font-size:.76rem; font-weight:800; line-height:1.3; letter-spacing:.07em; text-decoration:none; }
 .brand-mark { display:grid; place-items:center; width:38px; height:38px; border:2px solid #8ee0cd; border-radius:11px; color:#a6f0da; font-size:1.4rem; font-weight:800; line-height:1; }
 .form-control { min-height:48px; border:1px solid #dfe6eb; border-radius:10px; padding:.7rem .9rem; color:var(--ink); font-size:.94rem; background:#fff; }
 .form-control:focus { border-color:#50bca8; box-shadow:0 0 0 3px rgba(36,169,144,.13); }
@@ -46,7 +44,7 @@ h1,h2,h3 { font-family:Manrope,Arial,sans-serif; letter-spacing:-.035em; }
 .sidebar { display:flex; flex-direction:column; width:258px; min-width:258px; min-height:100vh; padding:31px 17px 22px; color:#fff; background:var(--navy-deep); }
 .sidebar-brand { margin:0 13px 56px; }
 .sidebar-section-label { margin:0 14px 16px; color:#6e8b99; font-size:.67rem; font-weight:800; letter-spacing:.16em; }
-.role-heading { margin:0 14px 14px; color:#e7f4f2; font-family:Manrope,Arial,sans-serif; font-size:.86rem; font-weight:800; letter-spacing:.045em; line-height:1.5; }
+.role-heading { margin:0 14px 14px; color:#e7f4f2; font-family:"Segoe UI",Tahoma,Arial,sans-serif; font-size:.86rem; font-weight:800; letter-spacing:.045em; line-height:1.5; }
 .nav-entry { display:flex; align-items:center; gap:12px; padding:13px 14px; border-radius:10px; color:#aac0c8; font-size:.86rem; font-weight:700; text-decoration:none; }
 .nav-entry.active,.nav-entry:hover { background:#1b4652; color:#e5fff5; }
 .nav-icon { font-size:1.15rem; line-height:1; }
