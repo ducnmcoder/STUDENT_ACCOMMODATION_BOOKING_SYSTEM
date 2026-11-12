@@ -1,0 +1,174 @@
+@using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Helpers
+@{
+    string activeMenu = ViewData["ActiveMenu"] as string ?? "assets";
+    int? currentRoomId = ViewData["CurrentRoomId"] as int?;
+    string staffName = ViewData["StaffName"] as string ?? "Đỗ Kỹ Thuật";
+    staffName = TextHelper.FixEncoding(staffName);
+    var rooms = ViewData["SidebarRooms"] as List<STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.Facilities.RoomLookupDto> ?? new();
+    var pendingIncidents = ViewData["PendingIncidents"] as int? ?? 0;
+    var maintenanceCount = ViewData["MaintenanceCount"] as int? ?? 0;
+    var retiredCount = ViewData["RetiredCount"] as int? ?? 0;
+}
+
+<aside class="sidebar sabs-sidebar" aria-label="Menu điều hướng Cơ sở vật chất">
+    <!-- Brand Logo chuẩn của hệ thống Student Accommodation -->
+    <a class="brand sidebar-brand" href="/facilities">
+        <span class="brand-mark">S</span>
+        <span>STUDENT<br />ACCOMMODATION</span>
+    </a>
+
+    <div class="sidebar-section-label">DANH MỤC HỆ THỐNG</div>
+    <div class="role-heading">FACILITIES STAFF DASHBOARD</div>
+
+    <nav class="sabs-nav" aria-label="Danh mục chính">
+        <!-- 1. Quản lý thông tin hồ sơ cá nhân -->
+        <a class="nav-entry @(activeMenu == "profile" ? "active" : "")" href="/facilities-staff">
+            <span class="nav-icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </span>
+            <span>Quản lý thông tin</span>
+        </a>
+
+        <!-- 2. Mục cha: Quản lý thiết bị phòng (Có danh sách phòng con) -->
+        <div class="nav-group-parent @(activeMenu.StartsWith("assets") ? "open" : "")">
+            <a class="nav-entry @(activeMenu == "assets" && !currentRoomId.HasValue ? "active" : "")" 
+               href="/facilities?tab=assets" 
+               onclick="toggleSidebarSubMenu(event, 'roomSubNav')">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </span>
+                <span>Thiết bị theo phòng</span>
+                <span class="nav-chevron">▾</span>
+            </a>
+
+            <!-- Các mục con: Danh sách phòng cụ thể -->
+            <div class="sidebar-sub-menu" id="roomSubNav">
+                <a class="sub-nav-entry @(activeMenu == "assets" && !currentRoomId.HasValue ? "active" : "")" href="/facilities?tab=assets">
+                    <span>• Tất cả phòng</span>
+                </a>
+                @if (rooms.Any())
+                {
+                    @foreach (var r in rooms)
+                    {
+                        var isRoomActive = activeMenu == "assets" && currentRoomId == r.RoomId;
+                        <a class="sub-nav-entry @(isRoomActive ? "active" : "")" href="/facilities?tab=assets&roomId=@r.RoomId">
+                            <span>• Phòng @r.RoomCode</span>
+                            <small class="sub-badge">@r.AssetCount</small>
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a class="sub-nav-entry" href="/facilities?tab=assets&roomId=1"><span>• Phòng A101</span></a>
+                    <a class="sub-nav-entry" href="/facilities?tab=assets&roomId=2"><span>• Phòng A102</span></a>
+                    <a class="sub-nav-entry" href="/facilities?tab=assets&roomId=3"><span>• Phòng A201</span></a>
+                    <a class="sub-nav-entry" href="/facilities?tab=assets&roomId=4"><span>• Phòng B101</span></a>
+                    <a class="sub-nav-entry" href="/facilities?tab=assets&roomId=5"><span>• Phòng B202</span></a>
+                }
+            </div>
+        </div>
+
+        <!-- 3. Thiết bị đang bảo trì -->
+        <a class="nav-entry @(activeMenu == "maintenance" ? "active" : "")" href="/facilities?tab=assets&status=MAINTENANCE">
+            <span class="nav-icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+            </span>
+            <span>Thiết bị đang bảo trì</span>
+            @if (maintenanceCount > 0)
+            {
+                <span class="badge bg-warning text-dark ms-auto" style="font-size:0.7rem;">@maintenanceCount</span>
+            }
+        </a>
+
+        <!-- 4. Thiết bị đã thanh lý -->
+        <a class="nav-entry @(activeMenu == "retired" ? "active" : "")" href="/facilities?tab=assets&status=RETIRED">
+            <span class="nav-icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                    <rect x="1" y="3" width="22" height="5"></rect>
+                    <line x1="10" y1="12" x2="14" y2="12"></line>
+                </svg>
+            </span>
+            <span>Thiết bị đã thanh lý</span>
+            @if (retiredCount > 0)
+            {
+                <span class="badge bg-secondary ms-auto" style="font-size:0.7rem;">@retiredCount</span>
+            }
+        </a>
+
+        <!-- 5. Sự cố thiết bị (Bảo vệ báo cáo) -->
+        <a class="nav-entry @(activeMenu == "incidents" ? "active" : "")" href="/facilities?tab=incidents">
+            <span class="nav-icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </span>
+            <span>Sự cố thiết bị</span>
+            @if (pendingIncidents > 0)
+            {
+                <span class="badge bg-danger ms-auto" style="font-size:0.7rem;">@pendingIncidents mới</span>
+            }
+        </a>
+
+        <!-- 6. Nhật ký kiểm toán AUDIT_LOG -->
+        <a class="nav-entry @(activeMenu == "logs" ? "active" : "")" href="/facilities?tab=logs">
+            <span class="nav-icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+            </span>
+            <span>Nhật ký AUDIT_LOG</span>
+        </a>
+    </nav>
+
+    <!-- Chân Sidebar: Thông tin nhân viên & Nút Đăng xuất đầy đủ chữ -->
+    <div class="sidebar-bottom">
+        <a href="/facilities-staff" class="sidebar-user text-decoration-none" title="Xem hồ sơ nhân viên">
+            <span class="avatar">@(string.IsNullOrEmpty(staffName) ? "Đ" : staffName.Substring(0, 1).ToUpperInvariant())</span>
+            <span>
+                <strong class="text-white">@staffName</strong>
+                <small class="text-muted d-block">Nhân viên cơ sở vật chất</small>
+            </span>
+        </a>
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="logout-button">
+                <span aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </span>
+                <span>Đăng xuất</span>
+            </button>
+        </form>
+    </div>
+</aside>
+
+<script>
+    function toggleSidebarSubMenu(event, subMenuId) {
+        // Nếu click vào icon chevron thì chỉ toggle, không chuyển trang
+        if (event.target.classList.contains('nav-chevron')) {
+            event.preventDefault();
+            const sub = document.getElementById(subMenuId);
+            if (sub) {
+                sub.classList.toggle('d-none');
+            }
+        }
+    }
+</script>
+

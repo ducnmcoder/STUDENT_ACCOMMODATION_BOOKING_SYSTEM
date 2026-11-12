@@ -8,7 +8,7 @@ using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models;
 namespace STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Controllers;
 
 [Authorize]
-public sealed class DashboardController(AccountRepository accounts, ILogger<DashboardController> logger) : Controller
+public sealed class DashboardController(AccountRepository accounts, ReputationRepository reputation, ILogger<DashboardController> logger) : Controller
 {
     [HttpGet("student")]
     [Authorize(Roles = "STUDENT")]
@@ -25,6 +25,14 @@ public sealed class DashboardController(AccountRepository accounts, ILogger<Dash
     [HttpGet("security-guard")]
     [Authorize(Roles = "SECURITY_GUARD")]
     public Task<IActionResult> SecurityGuard() => Show("SECURITY_GUARD");
+
+    [HttpGet("student/reputation")]
+    [Authorize(Roles = "STUDENT")]
+    public async Task<IActionResult> StudentReputation() => View("StudentReputation", await reputation.GetStudentHistoryAsync(AccountId()));
+
+    [HttpGet("admin/reputation")]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> AdminReputation() => View("AdminReputation", await reputation.GetAdminHistoryAsync());
 
     private async Task<IActionResult> Show(string role)
     {

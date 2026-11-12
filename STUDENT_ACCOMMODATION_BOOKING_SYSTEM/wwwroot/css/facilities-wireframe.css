@@ -1,0 +1,536 @@
+/* ==========================================================================
+   FPT UNIVERSITY - FACILITIES MANAGEMENT SYSTEM
+   Giao diện chuẩn hóa theo phong cách FAP (Trường Đại học FPT)
+   Sidebar đơn nhất bên trái, có phân nhóm cha-con, loại bỏ emoji và icon tự phát
+   ========================================================================== */
+
+:root {
+    --fpt-orange: #f97316;
+    --fpt-orange-hover: #ea580c;
+    --fpt-blue: #2563eb;
+    --fpt-teal: #0d9488;
+    --fpt-teal-hover: #0f766e;
+    
+    --sidebar-bg: #111827;
+    --sidebar-surface: #1f2937;
+    --sidebar-border: #374151;
+    --sidebar-text: #e5e7eb;
+    --sidebar-text-muted: #9ca3af;
+    --sidebar-active-bg: #1e3a5f;
+    --sidebar-active-text: #60a5fa;
+
+    --content-bg: #f8fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body.fpt-facilities-body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--content-bg);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* KHUNG GIAO DIỆN CHÍNH */
+.fpt-layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* ==================== 1. SIDEBAR DUY NHẤT CHUẨN FAP ==================== */
+.fpt-sidebar {
+    width: 270px;
+    min-width: 270px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--sidebar-border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+/* Header thương hiệu FPT */
+.fpt-sidebar-brand {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--sidebar-border);
+    background-color: #0b0f19;
+}
+
+.fpt-brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.fpt-badge-logo {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.05em;
+}
+
+.fpt-brand-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.02em;
+    margin: 0;
+}
+
+.fpt-brand-sub {
+    font-size: 11px;
+    color: var(--sidebar-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 4px 0 0;
+}
+
+/* Nội dung Menu điều hướng */
+.fpt-sidebar-menu {
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex: 1;
+}
+
+.fpt-menu-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.fpt-group-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: #60a5fa;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 12px 4px;
+    margin: 0;
+}
+
+/* Nút danh mục cha */
+.fpt-nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.fpt-nav-item:hover {
+    background-color: var(--sidebar-surface);
+    color: #ffffff;
+}
+
+.fpt-nav-item.active {
+    background-color: var(--sidebar-active-bg);
+    color: #93c5fd;
+    font-weight: 700;
+}
+
+.fpt-nav-item-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fpt-nav-icon {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.fpt-nav-item:hover .fpt-nav-icon,
+.fpt-nav-item.active .fpt-nav-icon {
+    color: #60a5fa;
+}
+
+.fpt-chevron {
+    width: 14px;
+    height: 14px;
+    color: #6b7280;
+    transition: transform 0.2s ease;
+}
+
+/* Danh mục con (Sub-menu items) */
+.fpt-sub-menu {
+    list-style: none;
+    padding: 4px 0 6px 28px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fpt-sub-item a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 12px;
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.fpt-sub-item a:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.fpt-sub-item.active a {
+    color: #38bdf8;
+    background-color: rgba(56, 189, 248, 0.12);
+    font-weight: 700;
+}
+
+.fpt-badge-count {
+    font-size: 11px;
+    background-color: #374151;
+    color: #d1d5db;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.fpt-sub-item.active .fpt-badge-count {
+    background-color: #0284c7;
+    color: #ffffff;
+}
+
+.fpt-badge-alert {
+    font-size: 11px;
+    background-color: #ef4444;
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+/* Khu vực tài khoản ở chân Sidebar */
+.fpt-sidebar-footer {
+    padding: 14px 16px;
+    border-top: 1px solid var(--sidebar-border);
+    background-color: #0d131f;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fpt-user-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background-color: var(--sidebar-surface);
+    border-radius: 8px;
+    border: 1px solid var(--sidebar-border);
+    text-decoration: none;
+    color: #ffffff;
+    transition: background-color 0.15s ease;
+}
+
+.fpt-user-card:hover {
+    background-color: #2d3748;
+}
+
+.fpt-avatar-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #f97316;
+    color: #ffffff;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.fpt-user-meta {
+    overflow: hidden;
+}
+
+.fpt-user-name {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fpt-user-role {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.fpt-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 14px;
+    background-color: transparent;
+    color: #f87171;
+    border: 1px solid #7f1d1d;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.fpt-logout-btn:hover {
+    background-color: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+}
+
+/* ==================== 2. MAIN CONTENT ==================== */
+.fpt-main-container {
+    flex: 1;
+    min-width: 0;
+    background-color: var(--content-bg);
+    padding: 24px 32px 48px;
+}
+
+/* Header & Breadcrumb */
+.fpt-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.fpt-page-header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+}
+
+.fpt-page-header p {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0;
+}
+
+/* 4 Thẻ Thống kê tổng quan (Top Metrics) */
+.fpt-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.fpt-metric-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.fpt-metric-val {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+.fpt-metric-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+}
+
+.fpt-metric-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+}
+
+.fpt-metric-icon.blue { background-color: #eff6ff; color: #2563eb; }
+.fpt-metric-icon.teal { background-color: #f0fdfa; color: #0d9488; }
+.fpt-metric-icon.orange { background-color: #fff7ed; color: #ea580c; }
+.fpt-metric-icon.red { background-color: #fef2f2; color: #dc2626; }
+
+/* Bộ lọc tìm kiếm */
+.fpt-filter-panel {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+
+.fpt-filter-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+}
+
+/* Nút bấm chuẩn */
+.fpt-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f97316;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25);
+    transition: all 0.15s ease;
+}
+
+.fpt-btn-primary:hover {
+    background-color: #ea580c;
+    color: #ffffff;
+}
+
+.fpt-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #ffffff;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 7px;
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.fpt-btn-secondary:hover {
+    background-color: #f1f5f9;
+}
+
+/* Bảng dữ liệu */
+.fpt-table-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.fpt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.fpt-table th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.fpt-table td {
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.fpt-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Badges tình trạng & trạng thái chuẩn Enterprise */
+.fpt-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.fpt-pill.good { background-color: #ecfdf5; color: #047857; }
+.fpt-pill.worn { background-color: #fefce8; color: #a16207; }
+.fpt-pill.damaged { background-color: #fef2f2; color: #b91c1c; }
+
+.fpt-pill.active { background-color: #f0fdfa; color: #0f766e; }
+.fpt-pill.maintenance { background-color: #fff7ed; color: #c2410c; }
+.fpt-pill.retired { background-color: #f1f5f9; color: #475569; }
+.fpt-pill.missing { background-color: #fef2f2; color: #b91c1c; }
+
+.fpt-pill.pending { background-color: #fef3c7; color: #b45309; }
+.fpt-pill.confirmed { background-color: #fef2f2; color: #b91c1c; }
+.fpt-pill.rejected { background-color: #f1f5f9; color: #475569; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .fpt-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .fpt-filter-row {
+        grid-template-columns: 1fr;
+    }
+}

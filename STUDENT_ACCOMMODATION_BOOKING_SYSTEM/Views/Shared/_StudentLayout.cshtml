@@ -1,0 +1,42 @@
+@using System.Security.Claims
+@{
+    var name = User.FindFirstValue(ClaimTypes.Name) ?? "Sinh viên";
+    var current = ViewData["StudentNav"] as string;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] | Student Accommodation</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-shell">
+        <aside class="sidebar">
+            <a class="brand sidebar-brand" href="/"><span class="brand-mark">S</span><span>STUDENT<br />ACCOMMODATION</span></a>
+            <div class="sidebar-section-label">DANH MỤC</div>
+            <div class="role-heading">STUDENT DASHBOARD</div>
+            <nav aria-label="Danh mục chính">
+                <a class="nav-entry" asp-controller="Dashboard" asp-action="Student"><span class="nav-icon" aria-hidden="true">◫</span> Quản lý thông tin</a>
+                <a class="nav-entry @(current == "rooms" ? "active" : "")" asp-controller="StudentRooms" asp-action="Index"><span class="nav-icon" aria-hidden="true">▦</span> Danh sách phòng</a>
+                <a class="nav-entry @(current == "bookings" ? "active" : "")" asp-controller="StudentRooms" asp-action="MyBookings"><span class="nav-icon" aria-hidden="true">◷</span> Đặt phòng của tôi</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="sidebar-user"><span class="avatar">@name[..1].ToUpperInvariant()</span><span><strong>@name</strong><small>Sinh viên</small></span></div>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="logout-button"><span aria-hidden="true">↪</span> Đăng xuất</button>
+                </form>
+            </div>
+        </aside>
+        <main class="dashboard-content">
+            <div class="topline"><span>KHÔNG GIAN CỦA BẠN</span><span class="role-pill">Sinh viên</span></div>
+            @if (TempData["Success"] is string success) { <div class="success-message student-flash" role="status">✓ @success</div> }
+            @if (TempData["Error"] is string error) { <div class="student-error student-flash" role="alert">@error</div> }
+            @RenderBody()
+        </main>
+    </div>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

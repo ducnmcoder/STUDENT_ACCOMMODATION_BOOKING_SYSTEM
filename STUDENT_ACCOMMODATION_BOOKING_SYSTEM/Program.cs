@@ -1,11 +1,28 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Data;
+using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+
+// Cấu hình kết nối SQL Server qua Entity Framework Core
+builder.Services.AddDbContext<AccommodationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AccommodationDb")));
+
+// Đăng ký các Repository
 builder.Services.AddScoped<AccountRepository>();
+builder.Services.AddScoped<IFacilitiesAssetRepository, FacilitiesAssetRepository>();
+builder.Services.AddDbContext<BookingDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AccommodationDb")));
+builder.Services.AddScoped<StudentBookingService>();
+builder.Services.AddScoped<GuardBookingRepository>();
+builder.Services.AddScoped<GuardInspectionRepository>();
+builder.Services.AddScoped<ReputationRepository>();
+builder.Services.AddScoped<NoShowService>();
+builder.Services.AddHostedService<NoShowBackgroundService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
