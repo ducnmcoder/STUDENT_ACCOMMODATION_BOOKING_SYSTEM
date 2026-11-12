@@ -106,8 +106,8 @@
                                     <th>Sinh viên</th>
                                     <th>Mã SV</th>
                                     <th>Phòng</th>
-                                    <th>Bắt đầu</th>
-                                    <th>Kết thúc</th>
+                                    <th>Bắt đầu (UTC+7)</th>
+                                    <th>Kết thúc (UTC+7)</th>
                                     <th>Check-in</th>
                                     <th>Thao tác</th>
                                 </tr>
@@ -126,11 +126,11 @@
                                         <td>@booking.RoomCode</td>
 
                                         <td>
-                                            @booking.StartAt.ToString("dd/MM/yyyy HH:mm")
+                                            @booking.StartAt.AddHours(7).ToString("dd/MM/yyyy HH:mm")
                                         </td>
 
                                         <td>
-                                            @booking.EndAt.ToString("dd/MM/yyyy HH:mm")
+                                            @booking.EndAt.AddHours(7).ToString("dd/MM/yyyy HH:mm")
                                         </td>
 
                                         <td>

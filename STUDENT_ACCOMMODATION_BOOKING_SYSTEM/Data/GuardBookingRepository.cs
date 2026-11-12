@@ -62,7 +62,7 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
     public async Task<bool> CheckInAsync(long bookingId, int guardId)
     {
         const string sql = """
-        DECLARE @now datetime2(0) = SYSDATETIME();
+        DECLARE @now datetime2(0) = SYSUTCDATETIME();
 
         INSERT INTO dbo.ATTENDANCE
         (
@@ -120,7 +120,7 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
         const string sql = """
         SET XACT_ABORT ON;
 
-        DECLARE @now datetime2(0) = SYSDATETIME();
+        DECLARE @now datetime2(0) = SYSUTCDATETIME();
 
         BEGIN TRANSACTION;
 

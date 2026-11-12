@@ -238,7 +238,7 @@ public class GuardInspectionRepository
              overall_condition, inspection_notes)
             OUTPUT INSERTED.inspection_id
             VALUES
-            (@bookingId, @guardId, @phase, SYSDATETIME(),
+            (@bookingId, @guardId, @phase, SYSUTCDATETIME(),
              @condition, @notes)
             """;
 
@@ -267,7 +267,7 @@ public class GuardInspectionRepository
                  observation_notes, confirmed_at)
                 OUTPUT INSERTED.inspection_item_id
                 VALUES
-                (@inspectionId, @assetId, @state, @notes, SYSDATETIME())
+                (@inspectionId, @assetId, @state, @notes, SYSUTCDATETIME())
                 """;
 
             long inspectionItemId;
@@ -293,7 +293,7 @@ public class GuardInspectionRepository
                     (inspection_item_id, incident_type, reported_at,
                      review_status, verified_missing, incident_notes)
                     VALUES
-                    (@itemId, @type, SYSDATETIME(),
+                    (@itemId, @type, SYSUTCDATETIME(),
                      'PENDING', 0, @notes)
                     """;
 

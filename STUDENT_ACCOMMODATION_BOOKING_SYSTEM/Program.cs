@@ -20,6 +20,9 @@ builder.Services.AddDbContext<BookingDbContext>(options =>
 builder.Services.AddScoped<StudentBookingService>();
 builder.Services.AddScoped<GuardBookingRepository>();
 builder.Services.AddScoped<GuardInspectionRepository>();
+builder.Services.AddScoped<ReputationRepository>();
+builder.Services.AddScoped<NoShowService>();
+builder.Services.AddHostedService<NoShowBackgroundService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

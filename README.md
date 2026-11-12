@@ -43,6 +43,10 @@ Lệnh chỉ thay các dòng còn chứa placeholder; các hash đã tạo khôn
 - Cookie có `HttpOnly`, `SameSite=Lax`, thời hạn 8 giờ, trượt theo phiên. Form thay đổi dữ liệu và đăng xuất dùng anti-forgery token.
 - Dashboard có thông tin cơ bản và thông tin theo vai trò. Các trường không bắt buộc có thể xóa nội dung rồi lưu. Email, tên, mã sinh viên/mã nhân viên là bắt buộc theo schema hiện tại.
 - Mục thông tin bổ sung hỗ trợ thêm, sửa, xóa. Tất cả thay đổi trong một lần lưu được ghi trong transaction và giới hạn theo tài khoản đang đăng nhập.
+- Sinh viên xem điểm theo tuần và lịch sử sự kiện tại `/student/reputation`; admin xem tổng hợp điểm và các sự kiện tại `/admin/reputation`.
+- Tác vụ nền định kỳ tìm booking `APPROVED` đã qua `POLICY.no_show_cutoff_min`, ghi `ATTENDANCE.NO_SHOW` và gọi `dbo.usp_RecordPenalty` để áp dụng mức phạt theo policy.
+- Tác vụ nền mặc định quét mỗi 60 giây. Có thể điều chỉnh bằng `Reputation:NoShowScanSeconds` (giới hạn 15–3600 giây). Cần có ít nhất một tài khoản trong `SECURITY_GUARD` để tạo attendance tự động.
+- Tác vụ chỉ hoạt động khi cơ sở dữ liệu có các bảng, ràng buộc và stored procedure `dbo.usp_RecordPenalty` từ file SQL gốc. Mỗi booking chỉ tạo một attendance; ghi attendance và sự kiện phạt được thực hiện an toàn khi chạy lặp.
 - Không có chức năng vô hiệu hóa hay xóa tài khoản trên giao diện.
 
 ## Chức năng sinh viên: phòng và lịch đặt

@@ -77,8 +77,8 @@
                                     <th>Sinh viên</th>
                                     <th>Mã SV</th>
                                     <th>Phòng</th>
-                                    <th>Bắt đầu</th>
-                                    <th>Kết thúc</th>
+                                    <th>Bắt đầu (UTC+7)</th>
+                                    <th>Kết thúc (UTC+7)</th>
                                     <th>Trạng thái</th>
                                     <th>Check-in</th>
                                 </tr>
@@ -92,18 +92,18 @@
                                         <td>@booking.StudentName</td>
                                         <td>@booking.StudentCode</td>
                                         <td>@booking.RoomCode</td>
-                                        <td>@booking.StartAt.ToString("dd/MM/yyyy HH:mm")</td>
-                                        <td>@booking.EndAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@booking.StartAt.AddHours(7).ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@booking.EndAt.AddHours(7).ToString("dd/MM/yyyy HH:mm")</td>
                                         <td>@booking.BookingStatus</td>
 
                                         <td>
                                             @if (booking.CheckInOutcome != null)
                                             {
-                                                <span class="badge bg-success">
+                                                <span class="badge @(booking.CheckInOutcome == "NO_SHOW" ? "bg-danger" : "bg-success")">
                                                     @booking.CheckInOutcome
                                                 </span>
                                             }
-                                            else if (DateTime.Now >= booking.EndAt)
+                                            else if (DateTime.UtcNow >= booking.EndAt)
                                             {
                                                 <span class="text-muted">Hết thời gian</span>
                                             }
