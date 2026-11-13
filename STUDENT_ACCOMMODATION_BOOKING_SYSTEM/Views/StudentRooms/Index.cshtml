@@ -1,0 +1,72 @@
+@model STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.RoomsViewModel
+@{
+    Layout = "_StudentLayout";
+    ViewData["Title"] = "Danh sách phòng";
+    ViewData["StudentNav"] = "rooms";
+    var eligibility = Model.Eligibility;
+}
+<header class="page-header"><div><div class="eyebrow dark">PHÒNG HỌC & SINH HOẠT</div><h1>Danh sách phòng</h1><p>Chọn ngày để xem các khung giờ còn trống, sau đó đặt phòng.</p></div></header>
+
+<section class="profile-card">
+    <div class="card-heading"><span class="card-icon">01</span><div><h2>Điều kiện đặt phòng</h2><p>Hệ thống sẽ kiểm tra lại điểm uy tín, số lượt còn lại và tình trạng phòng khi bạn đặt.</p></div></div>
+    <div class="student-metadata">
+        <span>Trạng thái sinh viên: <strong>@(eligibility.EnrollmentStatus == "ENROLLED" ? "Đang học" : eligibility.EnrollmentStatus)</strong></span>
+        <span>Điểm uy tín tháng này: <strong>@(eligibility.Score?.ToString() ?? "—")</strong></span>
+        <span>Giới hạn phòng đặt / tuần: <strong>@(eligibility.WeeklyLimit?.ToString() ?? "—")</strong></span>
+        <span>Đã đặt tuần này: <strong>@eligibility.BookingsThisWeek / @(eligibility.WeeklyLimit?.ToString() ?? "—")</strong></span>
+    </div>
+    @if (!eligibility.HasActivePolicy) { <p class="student-warning">Hiện chưa có chính sách đặt phòng có hiệu lực.</p> }
+    else if (eligibility.Score < eligibility.Threshold) { <p class="student-warning">Điểm uy tín hiện dưới ngưỡng đặt phòng.</p> }
+    else if (eligibility.BookingsThisWeek >= eligibility.WeeklyLimit) { <p class="student-warning">Bạn đã dùng hết lượt đặt phòng trong tuần này.</p> }
+</section>
+
+<section class="profile-card">
+    <div class="card-heading"><span class="card-icon">02</span><div><h2>Tìm phòng trống</h2><p>Ngày và các khung giờ theo giờ Việt Nam (UTC+7).</p></div></div>
+    <form id="room-search" class="room-search-grid" data-api-url="@Url.Action("Available", "StudentRoomsApi")">
+        <div class="field-group"><label for="building">Tòa</label><select id="building" class="form-control"><option value="">Tất cả tòa</option>@foreach (var building in Model.Buildings) { <option value="@building">@building</option> }</select></div>
+        <div class="field-group"><label for="floor">Tầng</label><input id="floor" type="number" min="0" max="32767" class="form-control" placeholder="Tất cả tầng" /></div>
+        <div class="field-group"><label for="capacity">Sức chứa tối thiểu</label><input id="capacity" type="number" min="1" max="32767" class="form-control" placeholder="Số người" /></div>
+        <div class="field-group"><label for="booking-date">Ngày đặt <span class="required">*</span></label><input id="booking-date" type="date" class="form-control" required /></div>
+        <button type="submit" class="primary-button">Tìm phòng trống →</button>
+    </form>
+    <p id="search-message" class="student-message" role="status" aria-live="polite"></p>
+</section>
+
+<section class="profile-card">
+    <div class="card-heading"><span class="card-icon">03</span><div><h2 id="room-list-title">Tất cả phòng</h2><p>Thiết bị đang hoạt động được liệt kê theo từng phòng.</p></div></div>
+    <div id="all-rooms" class="room-grid">
+        @foreach (var room in Model.Rooms) {
+            <article class="room-card">
+                <div class="room-card-top"><strong>@room.Code</strong><span class="room-status @(room.Status == "AVAILABLE" ? "available" : "")">@room.Status</span></div>
+                <p>@room.Building · Tầng @room.Floor · @room.Capacity người</p>
+                <small>Thiết bị: @(room.Assets.Count == 0 ? "Chưa có" : string.Join(", ", room.Assets))</small>
+                @if (room.Status == "AVAILABLE") {
+                    <button type="button" class="primary-button room-book-button" data-room-id="@room.Id" data-room-code="@room.Code">Đặt phòng này →</button>
+                }
+            </article>
+        }
+    </div>
+    <div id="available-rooms" class="room-grid" hidden></div>
+    @if (Model.Rooms.Count == 0) { <p>Chưa có phòng nào trong hệ thống.</p> }
+</section>
+
+<section class="profile-card" id="booking-panel" hidden>
+    <div class="card-heading"><span class="card-icon">04</span><div><h2>Đặt <span id="selected-room"></span></h2><p>Phòng sẽ được kiểm tra lại khi gửi yêu cầu để tránh trùng lịch.</p></div></div>
+    <form asp-controller="StudentRooms" asp-action="Book" method="post" class="booking-form" id="book-room-form">
+        <input type="hidden" name="RoomId" id="booking-room-id" />
+        <input type="hidden" name="StartAt" id="booking-start" />
+        <input type="hidden" name="EndAt" id="booking-end" />
+        <p>Ngày đặt: <strong id="selected-date"></strong> (UTC+7)</p>
+        <div class="field-group"><label for="slot-choice">Khung giờ còn trống</label><select id="slot-choice" class="form-control"></select></div>
+        <div class="room-time-grid">
+            <div class="field-group"><label for="book-start-time">Giờ bắt đầu</label><input id="book-start-time" type="time" class="form-control" required /></div>
+            <div class="field-group"><label for="book-end-time">Giờ kết thúc</label><input id="book-end-time" type="time" class="form-control" required /></div>
+        </div>
+        <p class="field-hint">Bạn có thể chọn một phần của khung giờ còn trống. 00:00 ở giờ kết thúc là cuối ngày đặt.</p>
+        <p id="booking-message" class="student-error" role="alert" hidden></p>
+        <div class="field-group"><label for="purpose">Mục đích sử dụng</label><textarea id="purpose" name="Purpose" maxlength="300" rows="3" class="form-control" placeholder="Ví dụ: Học nhóm"></textarea></div>
+        <button type="submit" class="primary-button">Xác nhận đặt phòng →</button>
+    </form>
+</section>
+
+@section Scripts { <script src="~/js/student-rooms.js" asp-append-version="true"></script> }

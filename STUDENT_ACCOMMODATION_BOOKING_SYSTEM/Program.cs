@@ -27,6 +27,7 @@ builder.Services.AddScoped<ReputationRepository>();
 builder.Services.AddScoped<NoShowService>();
 builder.Services.AddHostedService<NoShowBackgroundService>();
 builder.Services.AddSignalR();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -39,22 +40,27 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
     });
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 var initializePasswords = args.Contains("--init-demo-passwords", StringComparer.OrdinalIgnoreCase);
 var resetPasswords = args.Contains("--reset-demo-passwords", StringComparer.OrdinalIgnoreCase);
+
 if (initializePasswords || resetPasswords)
 {
     if (!app.Environment.IsDevelopment())
         throw new InvalidOperationException("Chỉ khởi tạo mật khẩu mẫu trong môi trường Development.");
+
     var password = Environment.GetEnvironmentVariable("SABS_DEMO_PASSWORD");
     if (string.IsNullOrWhiteSpace(password) || (initializePasswords && password.Length < 12))
         throw new InvalidOperationException("Đặt SABS_DEMO_PASSWORD dài ít nhất 12 ký tự trước khi chạy.");
+
     using var scope = app.Services.CreateScope();
     var count = await scope.ServiceProvider.GetRequiredService<AccountRepository>()
         .SetDemoPasswordsAsync(password, resetPasswords);
+
     Console.WriteLine($"Đã {(resetPasswords ? "đặt lại" : "khởi tạo")} mật khẩu cho {count} tài khoản mẫu.");
     return;
 }
