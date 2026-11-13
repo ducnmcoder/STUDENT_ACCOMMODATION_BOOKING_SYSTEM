@@ -1,0 +1,129 @@
+﻿@model List<STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.GuardInspectionBooking>
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Kiểm tra thiết bị";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kiểm tra thiết bị</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body class="dashboard-page">
+    <div class="dashboard-shell">
+        <aside class="sidebar">
+            <a class="brand sidebar-brand" href="/security-guard">
+                <span class="brand-mark">S</span>
+                <span>STUDENT<br />ACCOMMODATION</span>
+            </a>
+
+            <div class="sidebar-section-label">DANH MỤC</div>
+            <div class="role-heading">SECURITY GUARD DASHBOARD</div>
+
+            <nav aria-label="Danh mục chính">
+                <a class="nav-entry" href="/security-guard">
+                    <span class="nav-icon" aria-hidden="true">◫</span>
+                    Quản lý thông tin
+                </a>
+
+                <a class="nav-entry" href="/security-guard/bookings">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    Danh sách lượt đến
+                </a>
+
+                <a class="nav-entry" href="/security-guard/checkouts">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    Check-out
+                </a>
+
+                <a class="nav-entry active" href="/security-guard/inspections">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    Kiểm tra thiết bị
+                </a>
+            </nav>
+
+        </aside>
+
+        <main class="dashboard-content">
+            <header class="page-header">
+                <div>
+                    <div class="eyebrow dark">NHÂN VIÊN BẢO VỆ</div>
+                    <h1>Kiểm tra thiết bị</h1>
+                    <p>Ghi nhận tình trạng thiết bị khi nhận và trả phòng.</p>
+                </div>
+            </header>
+
+            <section class="profile-card">
+                @if (Model.Count == 0)
+                {
+                    <p>Chưa có booking nào để kiểm tra.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Booking</th>
+                                    <th>Sinh viên</th>
+                                    <th>Phòng</th>
+                                    <th>Trạng thái</th>
+                                    <th>Nhận phòng (IN)</th>
+                                    <th>Trả phòng (OUT)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var booking in Model)
+                                {
+                                    <tr>
+                                        <td>@booking.BookingId</td>
+                                        <td>@booking.StudentName</td>
+                                        <td>@booking.RoomCode</td>
+                                        <td>@booking.BookingStatus</td>
+                                        <td>
+                                            @if (booking.HasIn)
+                                            {
+                                                <span class="badge bg-success">Đã kiểm tra</span>
+                                            }
+                                            else if (booking.BookingStatus == "APPROVED")
+                                            {
+                                                <a class="btn btn-primary btn-sm"
+                                                   href="/security-guard/inspections/@booking.BookingId/IN">
+                                                    Kiểm tra IN
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">—</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (booking.HasOut)
+                                            {
+                                                <span class="badge bg-success">Đã kiểm tra</span>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-primary btn-sm"
+                                                   href="/security-guard/inspections/@booking.BookingId/OUT">
+                                                    Kiểm tra OUT
+                                                </a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+        </main>
+    </div>
+</body>
+</html>

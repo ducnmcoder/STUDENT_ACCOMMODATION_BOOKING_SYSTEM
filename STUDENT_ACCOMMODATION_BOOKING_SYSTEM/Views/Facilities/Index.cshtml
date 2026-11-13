@@ -1,0 +1,716 @@
+@model STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.Facilities.FacilitiesDashboardViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Quản lý Cơ sở vật chất";
+    var activeMenu = Model.ActiveTab;
+    if (Model.ActiveTab == "assets" && Model.AssetFilter.Status == "MAINTENANCE") activeMenu = "maintenance";
+    if (Model.ActiveTab == "assets" && Model.AssetFilter.Status == "RETIRED") activeMenu = "retired";
+
+    ViewData["ActiveMenu"] = activeMenu;
+    ViewData["CurrentRoomId"] = Model.AssetFilter.RoomId;
+    ViewData["StaffName"] = Model.StaffName;
+    ViewData["SidebarRooms"] = Model.Rooms;
+    ViewData["PendingIncidents"] = Model.Stats.PendingIncidents;
+    ViewData["MaintenanceCount"] = Model.Stats.MaintenanceAssets;
+    ViewData["RetiredCount"] = Model.Stats.RetiredAssets;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] | Student Accommodation</title>
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Site CSS chung của toàn hệ thống -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-shell">
+
+        <!-- ==================== SIDEBAR ĐỒNG BỘ 100% VỚI WEB ==================== -->
+        @await Html.PartialAsync("_FacilitiesSidebar")
+
+        <!-- ==================== KHU VỰC NỘI DUNG CHÍNH (MAIN CONTENT) ==================== -->
+        <main class="dashboard-content">
+            <div class="topline">
+                <span>HỆ THỐNG QUẢN LÝ CƠ SỞ VẬT CHẤT</span>
+                <span class="role-pill">Nhân viên cơ sở vật chất</span>
+            </div>
+
+            <!-- Thông báo TempData -->
+            @if (TempData["Success"] is string successMsg)
+            {
+                <div class="success-message mt-3" role="status">✓ @successMsg</div>
+            }
+            @if (TempData["Error"] is string errorMsg)
+            {
+                <div class="form-error mt-3" role="alert" style="display:block; padding:12px 16px;">✕ @errorMsg</div>
+            }
+
+            <!-- 4 THẺ THỐNG KÊ TỔNG QUAN ĐẶT NGANG ĐẦU TRANG -->
+            <div class="row g-3 my-3">
+                <div class="col-md-3 col-sm-6">
+                    <div class="profile-card mb-0 p-3 text-center">
+                        <div class="h3 fw-bold mb-1" style="color:var(--navy);">@Model.Stats.TotalAssets</div>
+                        <div class="text-muted small fw-bold text-uppercase">Tổng thiết bị</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="profile-card mb-0 p-3 text-center">
+                        <div class="h3 fw-bold mb-1" style="color:#159982;">@Model.Stats.ActiveAssets</div>
+                        <div class="text-muted small fw-bold text-uppercase">Đang hoạt động</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="profile-card mb-0 p-3 text-center">
+                        <div class="h3 fw-bold mb-1" style="color:#d97706;">@Model.Stats.MaintenanceAssets</div>
+                        <div class="text-muted small fw-bold text-uppercase">Đang bảo trì</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="profile-card mb-0 p-3 text-center">
+                        <div class="h3 fw-bold mb-1" style="color:#dc2626;">@Model.Stats.PendingIncidents</div>
+                        <div class="text-muted small fw-bold text-uppercase">Sự cố chờ xử lý</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== NỘI DUNG CHI TIẾT THEO TAB ==================== -->
+            @if (Model.ActiveTab == "assets")
+            {
+                <header class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                    <div>
+                        <div class="eyebrow dark">QUẢN LÝ THIẾT BỊ</div>
+                        <h1>Thiết bị theo phòng</h1>
+                        <p>Theo dõi tình trạng kỹ thuật, thêm mới và cập nhật trạng thái thiết bị.</p>
+                    </div>
+                    <div>
+                        <button type="button" class="primary-button" data-bs-toggle="modal" data-bs-target="#createAssetModal">
+                            ＋ Thêm thiết bị mới
+                        </button>
+                    </div>
+                </header>
+
+                <!-- BỘ LỌC TÌM KIẾM -->
+                <section class="profile-card mb-3 p-3">
+                    <form method="get" action="/facilities">
+                        <input type="hidden" name="tab" value="assets" />
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">TÌM KIẾM</label>
+                                <input type="text" name="search" value="@Model.AssetFilter.Search" class="form-control" placeholder="Mã tem, tên thiết bị..." />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">PHÒNG</label>
+                                <select name="roomId" class="form-control">
+                                    <option value="">-- Tất cả phòng --</option>
+                                    @foreach (var r in Model.Rooms)
+                                    {
+                                        <option value="@r.RoomId" selected="@(Model.AssetFilter.RoomId == r.RoomId)">
+                                            @r.DisplayText
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold text-muted">TÌNH TRẠNG</label>
+                                <select name="condition" class="form-control">
+                                    <option value="">-- Tất cả --</option>
+                                    <option value="GOOD" selected="@(Model.AssetFilter.Condition == "GOOD")">Tốt (GOOD)</option>
+                                    <option value="WORN" selected="@(Model.AssetFilter.Condition == "WORN")">Hao mòn (WORN)</option>
+                                    <option value="DAMAGED" selected="@(Model.AssetFilter.Condition == "DAMAGED")">Hư hỏng (DAMAGED)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold text-muted">TRẠNG THÁI</label>
+                                <select name="status" class="form-control">
+                                    <option value="">-- Tất cả --</option>
+                                    <option value="ACTIVE" selected="@(Model.AssetFilter.Status == "ACTIVE")">Đang dùng (ACTIVE)</option>
+                                    <option value="MAINTENANCE" selected="@(Model.AssetFilter.Status == "MAINTENANCE")">Bảo trì (MAINTENANCE)</option>
+                                    <option value="RETIRED" selected="@(Model.AssetFilter.Status == "RETIRED")">Thanh lý (RETIRED)</option>
+                                    <option value="MISSING" selected="@(Model.AssetFilter.Status == "MISSING")">Thất lạc (MISSING)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex gap-2">
+                                <button type="submit" class="primary-button w-100" style="min-height:48px; padding:0 12px; gap:6px;">Lọc</button>
+                                <a href="/facilities?tab=assets" class="btn btn-outline-secondary d-flex align-items-center justify-content-center" style="min-height:48px; border-radius:10px; padding:0 14px;" title="Đặt lại">✕</a>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- BẢNG DANH SÁCH THIẾT BỊ -->
+                <section class="profile-card p-0 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3 py-3">MÃ TEM (TAG)</th>
+                                    <th>TÊN THIẾT BỊ</th>
+                                    <th>VỊ TRÍ PHÒNG</th>
+                                    <th>TÌNH TRẠNG</th>
+                                    <th>TRẠNG THÁI</th>
+                                    <th>NGƯỜI TẠO / SỬA</th>
+                                    <th class="text-end pe-3">THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.AssetsPaged.Items.Any())
+                                {
+                                    @foreach (var asset in Model.AssetsPaged.Items)
+                                    {
+                                        <tr>
+                                            <td class="ps-3">
+                                                <strong class="font-monospace text-primary">@asset.AssetTag</strong>
+                                                @if (asset.IncidentCount > 0)
+                                                {
+                                                    <span class="badge bg-danger ms-1" title="@asset.IncidentCount sự cố liên quan">@asset.IncidentCount sự cố</span>
+                                                }
+                                            </td>
+                                            <td><strong>@asset.AssetName</strong></td>
+                                            <td>
+                                                <span class="fw-bold">@asset.RoomCode</span> - @asset.Building (Tầng @asset.Floor)
+                                            </td>
+                                            <td>
+                                                @if (asset.RegisteredCondition == "GOOD")
+                                                {
+                                                    <span class="badge bg-success bg-opacity-10 text-success px-2 py-1">Tốt</span>
+                                                }
+                                                else if (asset.RegisteredCondition == "WORN")
+                                                {
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1">Hao mòn</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1">Hư hỏng</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (asset.AssetStatus == "ACTIVE")
+                                                {
+                                                    <span class="badge bg-info bg-opacity-10 text-info px-2 py-1">Đang hoạt động</span>
+                                                }
+                                                else if (asset.AssetStatus == "MAINTENANCE")
+                                                {
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1">Đang bảo trì</span>
+                                                }
+                                                else if (asset.AssetStatus == "RETIRED")
+                                                {
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">Đã thanh lý</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1">Thất lạc</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    Tạo: @asset.CreatedByStaffName
+                                                    @if (!string.IsNullOrEmpty(asset.UpdatedByStaffName))
+                                                    {
+                                                        <br /><span>Sửa: @asset.UpdatedByStaffName</span>
+                                                    }
+                                                </small>
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button" class="btn btn-outline-secondary" 
+                                                            data-bs-toggle="modal" data-bs-target="#updateStatusModal"
+                                                            data-asset-id="@asset.AssetId"
+                                                            data-asset-tag="@asset.AssetTag"
+                                                            data-asset-name="@asset.AssetName"
+                                                            data-asset-condition="@asset.RegisteredCondition"
+                                                            data-asset-status="@asset.AssetStatus">
+                                                        Trạng thái
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-primary"
+                                                            data-bs-toggle="modal" data-bs-target="#editAssetModal"
+                                                            data-asset-id="@asset.AssetId"
+                                                            data-asset-tag="@asset.AssetTag"
+                                                            data-asset-name="@asset.AssetName"
+                                                            data-room-id="@asset.RoomId"
+                                                            data-asset-condition="@asset.RegisteredCondition"
+                                                            data-asset-status="@asset.AssetStatus">
+                                                        Sửa
+                                                    </button>
+                                                    <form asp-controller="Facilities" asp-action="RetireOrDeleteAsset" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn thanh lý / xóa thiết bị này?');">
+                                                        <input type="hidden" name="assetId" value="@asset.AssetId" />
+                                                        <button type="submit" class="btn btn-outline-danger" title="Thanh lý / Xóa">
+                                                            Xóa
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">Không tìm thấy thiết bị nào phù hợp.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (Model.AssetsPaged.TotalPages > 1)
+                    {
+                        <div class="p-3 d-flex justify-content-between align-items-center border-top">
+                            <span class="text-muted small">Trang @Model.AssetsPaged.PageIndex / @Model.AssetsPaged.TotalPages (Tổng cộng @Model.AssetsPaged.TotalItems thiết bị)</span>
+                            <div class="d-flex gap-1">
+                                @for (var p = 1; p <= Model.AssetsPaged.TotalPages; p++)
+                                {
+                                    <a href="/facilities?tab=assets&page=@p&search=@Model.AssetFilter.Search&roomId=@Model.AssetFilter.RoomId&condition=@Model.AssetFilter.Condition&status=@Model.AssetFilter.Status" 
+                                       class="btn btn-sm @(p == Model.AssetsPaged.PageIndex ? "btn-primary" : "btn-outline-secondary")">
+                                        @p
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                </section>
+            }
+            else if (Model.ActiveTab == "incidents")
+            {
+                <header class="page-header mb-4">
+                    <div class="eyebrow dark">SỰ CỐ & KIỂM TRA</div>
+                    <h1>Sự cố thiết bị do bảo vệ báo cáo</h1>
+                    <p>Tiếp nhận sự cố hỏng hóc/thất lạc từ biên bản kiểm tra phòng và cập nhật phương án xử lý bảo trì.</p>
+                </header>
+
+                <!-- BỘ LỌC SỰ CỐ -->
+                <section class="profile-card mb-3 p-3">
+                    <form method="get" action="/facilities">
+                        <input type="hidden" name="tab" value="incidents" />
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">TÌM KIẾM</label>
+                                <input type="text" name="search" value="@Model.IncidentFilter.Search" class="form-control" placeholder="Mã tem, thiết bị, ghi chú..." />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">LOẠI SỰ CỐ</label>
+                                <select name="incidentType" class="form-control">
+                                    <option value="">-- Tất cả loại sự cố --</option>
+                                    <option value="DAMAGED" selected="@(Model.IncidentFilter.IncidentType == "DAMAGED")">Hư hỏng (DAMAGED)</option>
+                                    <option value="MISSING" selected="@(Model.IncidentFilter.IncidentType == "MISSING")">Thất lạc (MISSING)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">DUYỆT ADMIN</label>
+                                <select name="reviewStatus" class="form-control">
+                                    <option value="">-- Tất cả trạng thái --</option>
+                                    <option value="PENDING" selected="@(Model.IncidentFilter.ReviewStatus == "PENDING")">Chờ Admin duyệt (PENDING)</option>
+                                    <option value="CONFIRMED" selected="@(Model.IncidentFilter.ReviewStatus == "CONFIRMED")">Admin đã duyệt (CONFIRMED)</option>
+                                    <option value="REJECTED" selected="@(Model.IncidentFilter.ReviewStatus == "REJECTED")">Admin từ chối (REJECTED)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex gap-2">
+                                <button type="submit" class="primary-button w-100" style="min-height:48px; padding:0 12px; gap:6px;">Lọc</button>
+                                <a href="/facilities?tab=incidents" class="btn btn-outline-secondary d-flex align-items-center justify-content-center" style="min-height:48px; border-radius:10px; padding:0 14px;">✕</a>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- BẢNG SỰ CỐ -->
+                <section class="profile-card p-0 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3 py-3">MÃ SỰ CỐ</th>
+                                    <th>LOẠI SỰ CỐ</th>
+                                    <th>THIẾT BỊ & PHÒNG</th>
+                                    <th>THỜI GIAN BÁO</th>
+                                    <th>BẢO VỆ GHI CHÚ</th>
+                                    <th>DUYỆT ADMIN</th>
+                                    <th class="text-end pe-3">XỬ LÝ KỸ THUẬT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.IncidentsPaged.Items.Any())
+                                {
+                                    @foreach (var inc in Model.IncidentsPaged.Items)
+                                    {
+                                        <tr>
+                                            <td class="ps-3">
+                                                <strong class="font-monospace">#INC-@inc.IncidentId</strong>
+                                                <div class="text-muted small">Biên bản @inc.Phase (BK #@inc.BookingId)</div>
+                                            </td>
+                                            <td>
+                                                @if (inc.IncidentType == "DAMAGED")
+                                                {
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1">Hư hỏng</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1">Thất lạc</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <strong>@inc.AssetName</strong>
+                                                <div class="text-muted small">
+                                                    Tem: <span class="font-monospace fw-bold text-dark">@inc.AssetTag</span> | Phòng @inc.RoomCode (@inc.Building)
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @inc.ReportedAt.ToString("dd/MM/yyyy HH:mm")
+                                                <div class="text-muted small">Bảo vệ: @inc.GuardName</div>
+                                            </td>
+                                            <td>
+                                                <span class="text-dark">@(string.IsNullOrWhiteSpace(inc.IncidentNotes) ? "Không có ghi chú" : inc.IncidentNotes)</span>
+                                            </td>
+                                            <td>
+                                                @if (inc.ReviewStatus == "PENDING")
+                                                {
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1">Chờ Admin duyệt</span>
+                                                }
+                                                else if (inc.ReviewStatus == "CONFIRMED")
+                                                {
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1">Admin đã duyệt</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">Admin từ chối</span>
+                                                }
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <button type="button" class="primary-button" style="min-height:36px; padding:0 14px; font-size:0.8rem; gap:6px;"
+                                                        data-bs-toggle="modal" data-bs-target="#processIncidentModal"
+                                                        data-incident-id="@inc.IncidentId"
+                                                        data-asset-id="@inc.AssetId"
+                                                        data-asset-tag="@inc.AssetTag"
+                                                        data-asset-name="@inc.AssetName"
+                                                        data-incident-type="@inc.IncidentType"
+                                                        data-current-status="@inc.CurrentAssetStatus"
+                                                        data-current-condition="@inc.CurrentAssetCondition">
+                                                    Xử lý bảo trì
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">Không có sự cố thiết bị nào.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            }
+            else if (Model.ActiveTab == "logs")
+            {
+                <header class="page-header mb-4">
+                    <div class="eyebrow dark">NHẬT KÝ HỆ THỐNG</div>
+                    <h1>Nhật ký kiểm toán thiết bị (AUDIT_LOG)</h1>
+                    <p>Lịch sử ghi vết toàn bộ thao tác thêm mới, điều chuyển phòng, cập nhật tình trạng và bảo trì.</p>
+                </header>
+
+                <section class="profile-card p-0 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3 py-3">MÃ LOG</th>
+                                    <th>THỜI GIAN</th>
+                                    <th>HÀNH ĐỘNG</th>
+                                    <th>ĐỐI TƯỢNG</th>
+                                    <th>NGƯỜI THỰC HIỆN</th>
+                                    <th class="pe-3">TÓM TẮT THAY ĐỔI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.RecentAuditLogs.Any())
+                                {
+                                    @foreach (var log in Model.RecentAuditLogs)
+                                    {
+                                        <tr>
+                                            <td class="ps-3"><span class="font-monospace">#LOG-@log.AuditId</span></td>
+                                            <td>@log.OccurredAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                            <td><span class="badge bg-secondary">@log.ActionType</span></td>
+                                            <td><strong class="font-monospace text-primary">#@log.TargetKey</strong></td>
+                                            <td><strong>@log.PerformedByName</strong></td>
+                                            <td class="pe-3">
+                                                @if (!string.IsNullOrEmpty(log.BeforeSummary))
+                                                {
+                                                    <div class="text-muted small">Trước: @log.BeforeSummary</div>
+                                                }
+                                                <div class="fw-bold text-dark small">Sau: @log.AfterSummary</div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">Chưa có bản ghi nhật ký kiểm toán nào.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            }
+
+        </main>
+    </div>
+
+    <!-- ==================== CÁC MODAL DIALOGS ==================== -->
+
+    <!-- Modal 1: Thêm mới thiết bị -->
+    <div class="modal fade" id="createAssetModal" tabindex="-1" aria-labelledby="createAssetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-controller="Facilities" asp-action="CreateAsset" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="createAssetModalLabel">Thêm mới thiết bị vào phòng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Phòng lưu trú / phòng học <span class="text-danger">*</span></label>
+                            <select name="RoomId" class="form-control" required>
+                                <option value="">-- Chọn phòng --</option>
+                                @foreach (var r in Model.Rooms)
+                                {
+                                    <option value="@r.RoomId">@r.DisplayText</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Mã tem thiết bị (Asset Tag) <span class="text-danger">*</span></label>
+                            <input type="text" name="AssetTag" class="form-control" placeholder="Ví dụ: A101-TBL-02..." required maxlength="50" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Tên thiết bị <span class="text-danger">*</span></label>
+                            <input type="text" name="AssetName" class="form-control" placeholder="Ví dụ: Bàn học gỗ, Ghế xoay..." required maxlength="150" />
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold small">Tình trạng ban đầu</label>
+                                <select name="RegisteredCondition" class="form-control">
+                                    <option value="GOOD">Tốt (GOOD)</option>
+                                    <option value="WORN">Hao mòn (WORN)</option>
+                                    <option value="DAMAGED">Hư hỏng (DAMAGED)</option>
+                                </select>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold small">Trạng thái hoạt động</label>
+                                <select name="AssetStatus" class="form-control">
+                                    <option value="ACTIVE">Đang hoạt động</option>
+                                    <option value="MAINTENANCE">Bảo trì</option>
+                                    <option value="RETIRED">Thanh lý</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="primary-button" style="min-height:42px;">Lưu thiết bị</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Chỉnh sửa thiết bị -->
+    <div class="modal fade" id="editAssetModal" tabindex="-1" aria-labelledby="editAssetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-controller="Facilities" asp-action="EditAsset" method="post">
+                    <input type="hidden" name="AssetId" id="edit-asset-id" />
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="editAssetModalLabel">Chỉnh sửa thông tin thiết bị</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Vị trí phòng</label>
+                            <select name="RoomId" id="edit-room-id" class="form-control" required>
+                                @foreach (var r in Model.Rooms)
+                                {
+                                    <option value="@r.RoomId">@r.DisplayText</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Mã tem thiết bị</label>
+                            <input type="text" name="AssetTag" id="edit-asset-tag" class="form-control" required maxlength="50" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Tên thiết bị</label>
+                            <input type="text" name="AssetName" id="edit-asset-name" class="form-control" required maxlength="150" />
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold small">Tình trạng</label>
+                                <select name="RegisteredCondition" id="edit-condition" class="form-control">
+                                    <option value="GOOD">Tốt (GOOD)</option>
+                                    <option value="WORN">Hao mòn (WORN)</option>
+                                    <option value="DAMAGED">Hư hỏng (DAMAGED)</option>
+                                </select>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold small">Trạng thái</label>
+                                <select name="AssetStatus" id="edit-status" class="form-control">
+                                    <option value="ACTIVE">Đang hoạt động</option>
+                                    <option value="MAINTENANCE">Bảo trì</option>
+                                    <option value="RETIRED">Thanh lý</option>
+                                    <option value="MISSING">Thất lạc</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="primary-button" style="min-height:42px;">Cập nhật</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Cập nhật nhanh tình trạng & trạng thái -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-controller="Facilities" asp-action="UpdateAssetStatus" method="post">
+                    <input type="hidden" name="AssetId" id="status-asset-id" />
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="updateStatusModalLabel">Cập nhật tình trạng & trạng thái</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Thiết bị:</label>
+                            <div class="fw-bold fs-6" id="status-asset-display"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Tình trạng kỹ thuật</label>
+                            <select name="RegisteredCondition" id="status-condition" class="form-control">
+                                <option value="GOOD">Tốt (GOOD)</option>
+                                <option value="WORN">Hao mòn (WORN)</option>
+                                <option value="DAMAGED">Hư hỏng (DAMAGED)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Trạng thái hoạt động</label>
+                            <select name="AssetStatus" id="status-status" class="form-control">
+                                <option value="ACTIVE">Đang hoạt động (ACTIVE)</option>
+                                <option value="MAINTENANCE">Đưa vào bảo trì (MAINTENANCE)</option>
+                                <option value="RETIRED">Đã thanh lý (RETIRED)</option>
+                                <option value="MISSING">Báo mất (MISSING)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Ghi chú</label>
+                            <textarea name="Note" class="form-control" rows="2" placeholder="Nhập lý do thay đổi..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="primary-button" style="min-height:42px;">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Xử lý sự cố kỹ thuật -->
+    <div class="modal fade" id="processIncidentModal" tabindex="-1" aria-labelledby="processIncidentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-controller="Facilities" asp-action="ProcessIncident" method="post">
+                    <input type="hidden" name="IncidentId" id="proc-incident-id" />
+                    <input type="hidden" name="AssetId" id="proc-asset-id" />
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="processIncidentModalLabel">Xử lý sự cố kỹ thuật</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning mb-3">
+                            <div class="fw-bold" id="proc-incident-title">Sự cố thiết bị</div>
+                            <div class="small" id="proc-incident-desc"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Phương án xử lý kỹ thuật</label>
+                            <select name="Action" class="form-control" required>
+                                <option value="MAINTENANCE">1. Tiếp nhận và đưa vào bảo dưỡng (MAINTENANCE)</option>
+                                <option value="RESTORE">2. Đã sửa chữa / thay mới hoàn tất → Phục hồi (ACTIVE)</option>
+                                <option value="RETIRE">3. Hỏng nặng không thể sửa → Đề xuất thanh lý (RETIRED)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Cập nhật tình trạng thiết bị sau xử lý</label>
+                            <select name="TargetCondition" class="form-control">
+                                <option value="GOOD">Tốt (GOOD) - Sau sửa chữa hoặc thay thế</option>
+                                <option value="WORN">Hao mòn (WORN)</option>
+                                <option value="DAMAGED">Hư hỏng (DAMAGED) - Chờ vật tư</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Ghi chú giải pháp kỹ thuật</label>
+                            <textarea name="MaintenanceNotes" class="form-control" rows="3" placeholder="Mô tả công việc bảo trì..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="primary-button" style="min-height:42px;">Ghi nhận xử lý</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const editModal = document.getElementById('editAssetModal');
+        if (editModal) {
+            editModal.addEventListener('show.bs.modal', function (event) {
+                const btn = event.relatedTarget;
+                document.getElementById('edit-asset-id').value = btn.getAttribute('data-asset-id');
+                document.getElementById('edit-asset-tag').value = btn.getAttribute('data-asset-tag');
+                document.getElementById('edit-asset-name').value = btn.getAttribute('data-asset-name');
+                document.getElementById('edit-room-id').value = btn.getAttribute('data-room-id');
+                document.getElementById('edit-condition').value = btn.getAttribute('data-asset-condition');
+                document.getElementById('edit-status').value = btn.getAttribute('data-asset-status');
+            });
+        }
+
+        const statusModal = document.getElementById('updateStatusModal');
+        if (statusModal) {
+            statusModal.addEventListener('show.bs.modal', function (event) {
+                const btn = event.relatedTarget;
+                document.getElementById('status-asset-id').value = btn.getAttribute('data-asset-id');
+                document.getElementById('status-asset-display').innerText = `${btn.getAttribute('data-asset-name')} (Tem: ${btn.getAttribute('data-asset-tag')})`;
+                document.getElementById('status-condition').value = btn.getAttribute('data-asset-condition');
+                document.getElementById('status-status').value = btn.getAttribute('data-asset-status');
+            });
+        }
+
+        const procModal = document.getElementById('processIncidentModal');
+        if (procModal) {
+            procModal.addEventListener('show.bs.modal', function (event) {
+                const btn = event.relatedTarget;
+                const incId = btn.getAttribute('data-incident-id');
+                const assetId = btn.getAttribute('data-asset-id');
+                const tag = btn.getAttribute('data-asset-tag');
+                const name = btn.getAttribute('data-asset-name');
+                const type = btn.getAttribute('data-incident-type');
+                const currentStatus = btn.getAttribute('data-current-status');
+
+                document.getElementById('proc-incident-id').value = incId;
+                document.getElementById('proc-asset-id').value = assetId;
+                document.getElementById('proc-incident-title').innerText = `Sự cố #${incId}: ${type === 'DAMAGED' ? 'Hư hỏng' : 'Thất lạc'}`;
+                document.getElementById('proc-incident-desc').innerText = `Thiết bị: ${name} (Mã tem: ${tag}) | Trạng thái hiện tại: ${currentStatus}`;
+            });
+        }
+    </script>
+</body>
+</html>

@@ -2,6 +2,10 @@
 @{
     Layout = null;
     ViewData["Title"] = Model.RoleTitle;
+    var displayName = STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Helpers.TextHelper.FixEncoding(Model.FullName);
+    Model.FullName = displayName;
+    ViewData["ActiveMenu"] = "profile";
+    ViewData["StaffName"] = displayName;
     var roleLabel = Model.Role switch {
         "STUDENT" => "Sinh viên", "ADMIN" => "Quản trị viên",
         "FACILITIES_STAFF" => "Nhân viên cơ sở vật chất",
@@ -18,27 +22,47 @@
 </head>
 <body class="dashboard-page">
     <div class="dashboard-shell">
-        <aside class="sidebar">
-            <a class="brand sidebar-brand" href="/"><span class="brand-mark">S</span><span>STUDENT<br />ACCOMMODATION</span></a>
-            <div class="sidebar-section-label">DANH MỤC</div>
-            <div class="role-heading">@Model.RoleTitle</div>
-            <nav aria-label="Danh mục chính">
-                @if (Model.Role == "ADMIN")
-                {
-                    <a class="nav-entry" href="/admin/rooms"><span class="nav-icon" aria-hidden="true">🏠</span> Quản lý phòng</a>
-                    <a class="nav-entry" href="/admin/statistics"><span class="nav-icon" aria-hidden="true">📊</span> Thống kê sử dụng</a>
-                    <a class="nav-entry" href="/admin/incidents"><span class="nav-icon" aria-hidden="true">⚠️</span> Duyệt sự cố</a>
-                    <a class="nav-entry" href="/admin/occupied-rooms"><span class="nav-icon" aria-hidden="true">📡</span> Phòng đang sử dụng</a>
-                }
-                <a class="nav-entry active" href="@Context.Request.Path"><span class="nav-icon" aria-hidden="true">◫</span> Quản lý thông tin</a>
-            </nav>
-            <div class="sidebar-bottom">
-                <div class="sidebar-user"><span class="avatar">@Model.FullName.Substring(0, 1).ToUpperInvariant()</span><span><strong>@Model.FullName</strong><small>@roleLabel</small></span></div>
-                <form asp-controller="Account" asp-action="Logout" method="post">
-                    <button type="submit" class="logout-button"><span aria-hidden="true">↪</span> Đăng xuất</button>
-                </form>
-            </div>
-        </aside>
+        @if (Model.Role == "FACILITIES_STAFF")
+        {
+            @await Html.PartialAsync("_FacilitiesSidebar")
+        }
+        else
+        {
+            <aside class="sidebar">
+                <a class="brand sidebar-brand" href="/"><span class="brand-mark">S</span><span>STUDENT<br />ACCOMMODATION</span></a>
+                <div class="sidebar-section-label">DANH MỤC</div>
+                <div class="role-heading">@Model.RoleTitle</div>
+                <nav aria-label="Danh mục chính">
+                    <a class="nav-entry active" href="@Context.Request.Path"><span class="nav-icon" aria-hidden="true">◫</span> Quản lý thông tin</a>
+                    @if (Model.Role == "STUDENT")
+                    {
+                        <a class="nav-entry" asp-controller="StudentRooms" asp-action="Index"><span class="nav-icon" aria-hidden="true">▦</span> Danh sách phòng</a>
+                        <a class="nav-entry" asp-controller="StudentRooms" asp-action="MyBookings"><span class="nav-icon" aria-hidden="true">◷</span> Đặt phòng của tôi</a>
+                        <a class="nav-entry" asp-controller="Dashboard" asp-action="StudentReputation"><span class="nav-icon" aria-hidden="true">★</span> Điểm uy tín</a>
+                    }
+                    @if (Model.Role == "ADMIN")
+                    {
+                        <a class="nav-entry" href="/admin/rooms"><span class="nav-icon" aria-hidden="true">🏠</span> Quản lý phòng</a>
+                        <a class="nav-entry" href="/admin/statistics"><span class="nav-icon" aria-hidden="true">📊</span> Thống kê sử dụng</a>
+                        <a class="nav-entry" href="/admin/incidents"><span class="nav-icon" aria-hidden="true">⚠️</span> Duyệt sự cố</a>
+                        <a class="nav-entry" href="/admin/occupied-rooms"><span class="nav-icon" aria-hidden="true">📡</span> Phòng đang sử dụng</a>
+                        <a class="nav-entry" asp-controller="Dashboard" asp-action="AdminReputation"><span class="nav-icon" aria-hidden="true">◷</span> Lịch sử điểm</a>
+                    }
+                    @if (Model.Role == "SECURITY_GUARD")
+                    {
+                        <a class="nav-entry" asp-controller="SecurityGuard" asp-action="Bookings"><span class="nav-icon" aria-hidden="true">☷</span> Danh sách lượt đến</a>
+                        <a class="nav-entry" asp-controller="SecurityGuard" asp-action="Checkouts"><span class="nav-icon" aria-hidden="true">☷</span> Check-out</a>
+                        <a class="nav-entry" asp-controller="GuardInspection" asp-action="Index"><span class="nav-icon" aria-hidden="true">☷</span> Kiểm tra thiết bị</a>
+                    }
+                </nav>
+                <div class="sidebar-bottom">
+                    <div class="sidebar-user"><span class="avatar">@(string.IsNullOrEmpty(displayName) ? "U" : displayName.Substring(0, 1).ToUpperInvariant())</span><span><strong>@displayName</strong><small>@roleLabel</small></span></div>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="logout-button"><span aria-hidden="true">↪</span> Đăng xuất</button>
+                    </form>
+                </div>
+            </aside>
+        }
         <main class="dashboard-content">
             <div class="topline"><span>KHÔNG GIAN CỦA BẠN</span><span class="role-pill">@roleLabel</span></div>
             <header class="page-header"><div><div class="eyebrow dark">HỒ SƠ CÁ NHÂN</div><h1>Quản lý thông tin</h1><p>Xem và cập nhật thông tin của bạn. Nhấn Lưu thay đổi để ghi xuống cơ sở dữ liệu.</p></div></header>

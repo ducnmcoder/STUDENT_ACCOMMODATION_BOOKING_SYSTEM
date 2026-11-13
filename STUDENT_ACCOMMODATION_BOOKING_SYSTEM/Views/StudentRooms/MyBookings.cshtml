@@ -1,0 +1,35 @@
+@model IReadOnlyList<STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.BookingItem>
+@{
+    Layout = "_StudentLayout";
+    ViewData["Title"] = "Đặt phòng của tôi";
+    ViewData["StudentNav"] = "bookings";
+}
+<header class="page-header"><div><div class="eyebrow dark">LỊCH CỦA BẠN</div><h1>Đặt phòng của tôi</h1><p>Chỉ hiển thị các lịch đặt gắn với tài khoản sinh viên đang đăng nhập. Thời gian theo giờ Việt Nam (UTC+7).</p></div></header>
+<section class="profile-card">
+    <div class="card-heading"><span class="card-icon">01</span><div><h2>Lịch đặt phòng</h2><p>Có thể hủy lịch sắp tới nếu trạng thái còn chờ hoặc đã duyệt.</p></div></div>
+    @if (Model.Count == 0) {
+        <p>Bạn chưa có lịch đặt phòng. <a asp-controller="StudentRooms" asp-action="Index">Xem danh sách phòng</a></p>
+    } else {
+        <div class="booking-list">
+        @foreach (var booking in Model) {
+            <article class="booking-card">
+                <div class="booking-card-main">
+                    <div class="room-card-top"><strong>@booking.RoomCode</strong><span class="room-status @(booking.Status == "APPROVED" ? "available" : "")">@booking.Status</span></div>
+                    <p>@booking.Building · Tầng @booking.Floor</p>
+                    <p><strong>@booking.StartAt.AddHours(7).ToString("dd/MM/yyyy HH:mm")</strong> – <strong>@booking.EndAt.AddHours(7).ToString("dd/MM/yyyy HH:mm")</strong> (UTC+7)</p>
+                    @if (!string.IsNullOrWhiteSpace(booking.Purpose)) { <p>Mục đích: @booking.Purpose</p> }
+                    <small>Mã đặt phòng #@booking.Id</small>
+                </div>
+                @if (booking.CanCancel) {
+                    <form asp-controller="StudentRooms" asp-action="Cancel" method="post" class="cancel-form">
+                        <input type="hidden" name="BookingId" value="@booking.Id" />
+                        <label for="reason-@booking.Id">Lý do hủy (tùy chọn)</label>
+                        <input id="reason-@booking.Id" name="Reason" class="form-control" maxlength="300" />
+                        <button type="submit" class="remove-item">Hủy đặt phòng</button>
+                    </form>
+                }
+            </article>
+        }
+        </div>
+    }
+</section>

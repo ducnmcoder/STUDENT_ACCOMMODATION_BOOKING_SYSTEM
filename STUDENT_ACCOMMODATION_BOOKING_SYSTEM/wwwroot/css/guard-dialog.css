@@ -1,0 +1,17 @@
+﻿.guard-popup-overlay { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(10, 30, 42, 0.65); }
+.guard-popup-overlay.is-visible { display: flex; }
+.guard-popup-card { width: 100%; max-width: 430px; padding: 30px; background: white; border-radius: 18px; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2); animation: guardPopupAppear 0.2s ease; }
+.guard-popup-icon { width: 60px; height: 60px; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #e5f4f1; color: #149980; font-size: 30px; font-weight: bold; }
+.guard-popup-overlay[data-kind="error"] .guard-popup-icon { background: #fde8e8; color: #dc3545; }
+.guard-popup-title { margin-bottom: 10px; font-size: 23px; font-weight: 700; color: #102b3b; }
+.guard-popup-message { margin-bottom: 25px; font-size: 15px; line-height: 1.6; color: #667788; white-space: pre-line; }
+.guard-popup-actions { display: flex; gap: 12px; }
+.guard-popup-button { flex: 1; padding: 12px 16px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.guard-popup-button--cancel { background: #edf1f4; color: #304858; }
+.guard-popup-button--cancel:hover { background: #dce4e9; }
+.guard-popup-button--ok { background: #149980; color: white; }
+.guard-popup-button--ok:hover { background: #107d69; }
+.guard-popup-button:focus-visible { outline: 3px solid #82cbbb; outline-offset: 2px; }
+.guard-popup-button[hidden] { display: none; }
+@keyframes guardPopupAppear { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 480px) { .guard-popup-card { padding: 22px; } .guard-popup-actions { flex-direction: column; } }
