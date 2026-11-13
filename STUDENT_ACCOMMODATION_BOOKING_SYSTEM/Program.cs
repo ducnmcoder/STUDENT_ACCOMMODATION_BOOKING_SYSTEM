@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Data;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Hubs;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +28,7 @@ builder.Services.AddScoped<GuardBookingRepository>();
 builder.Services.AddScoped<GuardInspectionRepository>();
 builder.Services.AddScoped<ReputationRepository>();
 builder.Services.AddScoped<NoShowService>();
+builder.Services.AddScoped<JwtService>();
 builder.Services.AddHostedService<NoShowBackgroundService>();
 builder.Services.AddSignalR();
 
@@ -39,6 +43,20 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!)),
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
     });
 
 builder.Services.AddAuthorization();
