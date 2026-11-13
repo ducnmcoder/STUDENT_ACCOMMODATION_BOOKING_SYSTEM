@@ -1,0 +1,79 @@
+@model List<dynamic>
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Quản Lý Sự Cố";
+}
+
+<div class="dashboard-header">
+    <h2>Duyệt Báo Cáo Sự Cố Tài Sản</h2>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Danh Sách Sự Cố Chờ Duyệt</h5>
+    </div>
+    <div class="card-body">
+        @if (Model != null && Model.Count > 0)
+        {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Mã Sự Cố</th>
+                            <th>Phòng</th>
+                            <th>Sinh Viên</th>
+                            <th>Loại Tài Sản</th>
+                            <th>Mô Tả</th>
+                            <th>Ngày Báo Cáo</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var incident in Model)
+                        {
+                            <tr>
+                                <td>@incident.IncidentId</td>
+                                <td>@incident.RoomNumber</td>
+                                <td>@incident.StudentName</td>
+                                <td>@incident.AssetType</td>
+                                <td>@incident.Description</td>
+                                <td>@incident.ReportedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @if (incident.ReviewStatus == "PENDING")
+                                    {
+                                        <span class="badge bg-warning">Chờ Duyệt</span>
+                                    }
+                                    else if (incident.ReviewStatus == "APPROVED")
+                                    {
+                                        <span class="badge bg-success">Đã Duyệt</span>
+                                    }
+                                    else if (incident.ReviewStatus == "REJECTED")
+                                    {
+                                        <span class="badge bg-danger">Từ Chối</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (incident.ReviewStatus == "PENDING")
+                                    {
+                                        <a href="@Url.Action("ReviewIncident", new { id = incident.IncidentId })" class="btn btn-sm btn-primary">Duyệt</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Đã xử lý</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0">
+                Không có sự cố nào chờ duyệt
+            </div>
+        }
+    </div>
+</div>

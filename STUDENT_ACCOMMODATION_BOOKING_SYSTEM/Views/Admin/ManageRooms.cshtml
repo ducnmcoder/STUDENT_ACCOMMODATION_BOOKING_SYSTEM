@@ -1,0 +1,169 @@
+@model STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.RoomListViewModel
+@{
+    ViewData["Title"] = "Quản lý phòng";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<header class="page-header">
+    <div>
+        <div class="eyebrow dark">QUẢN TRỊ HỆ THỐNG</div>
+        <h1>Quản lý phòng</h1>
+        <p>Thêm, sửa, xóa phòng và quản lý trạng thái</p>
+    </div>
+    <div>
+        <a asp-action="CreateRoom" class="primary-button">+ Thêm phòng mới</a>
+    </div>
+</header>
+
+@if (TempData["Success"] is string success)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ✓ @success
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Error"] is string error)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ✗ @error
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="get" asp-action="ManageRooms" class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="filter" value="@Model.Filter" 
+                               class="form-control" placeholder="Tìm kiếm mã phòng hoặc tòa nhà..." />
+                    </div>
+                    <div class="col-md-3">
+                        <select name="statusFilter" class="form-select">
+                            <option value="">Tất cả trạng thái</option>
+                            @if (Model.StatusFilter == "AVAILABLE")
+                            {
+                                <option value="AVAILABLE" selected>Khả dụng</option>
+                            }
+                            else
+                            {
+                                <option value="AVAILABLE">Khả dụng</option>
+                            }
+                            
+                            @if (Model.StatusFilter == "MAINTENANCE")
+                            {
+                                <option value="MAINTENANCE" selected>Bảo trì</option>
+                            }
+                            else
+                            {
+                                <option value="MAINTENANCE">Bảo trì</option>
+                            }
+                            
+                            @if (Model.StatusFilter == "INACTIVE")
+                            {
+                                <option value="INACTIVE" selected>Không hoạt động</option>
+                            }
+                            else
+                            {
+                                <option value="INACTIVE">Không hoạt động</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-secondary w-100">🔍 Lọc</button>
+                    </div>
+                    <div class="col-md-2">
+                        <a asp-action="ManageRooms" class="btn btn-outline-secondary w-100">Xóa lọc</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Mã phòng</th>
+                                <th>Tòa nhà</th>
+                                <th>Tầng</th>
+                                <th>Sức chứa</th>
+                                <th>Trạng thái</th>
+                                <th>Cập nhật bởi</th>
+                                <th class="text-end">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Rooms.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        Không có phòng nào. <a asp-action="CreateRoom">Thêm phòng đầu tiên</a>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var room in Model.Rooms)
+                            {
+                                <tr>
+                                    <td><strong>@room.RoomCode</strong></td>
+                                    <td>@room.Building</td>
+                                    <td>Tầng @room.Floor</td>
+                                    <td>@room.Capacity người</td>
+                                    <td>
+                                        @switch (room.RoomStatus)
+                                        {
+                                            case "AVAILABLE":
+                                                <span class="badge bg-success">Khả dụng</span>
+                                                break;
+                                            case "MAINTENANCE":
+                                                <span class="badge bg-warning">Bảo trì</span>
+                                                break;
+                                            case "INACTIVE":
+                                                <span class="badge bg-secondary">Không hoạt động</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">@room.RoomStatus</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (room.LastConfiguredByAdminName != null)
+                                        {
+                                            <small class="text-muted">@room.LastConfiguredByAdminName</small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted">—</small>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-action="EditRoom" asp-route-roomId="@room.RoomId" 
+                                           class="btn btn-sm btn-outline-primary">Sửa</a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                onclick="confirmDelete(@room.RoomId, '@room.RoomCode')">Xóa</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="deleteForm" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script>
+        function confirmDelete(roomId, roomCode) {
+            if (confirm(`Bạn có chắc chắn muốn xóa phòng "${roomCode}"?\n\nLưu ý: Không thể xóa phòng đang có booking hoặc dữ liệu liên quan.`)) {
+                const form = document.getElementById('deleteForm');
+                form.action = `/admin/rooms/delete/${roomId}`;
+                form.submit();
+            }
+        }
+    </script>
+}

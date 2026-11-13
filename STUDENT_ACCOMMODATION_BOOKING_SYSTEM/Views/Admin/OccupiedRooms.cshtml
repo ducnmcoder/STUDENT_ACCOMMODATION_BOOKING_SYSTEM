@@ -1,0 +1,131 @@
+@model List<dynamic>
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Phòng Đang Sử Dụng";
+}
+
+<div class="dashboard-header">
+    <h2>Phòng Đang Sử Dụng (Real-time)</h2>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Danh Sách Phòng Đang Có Người Ở</h5>
+        <span id="lastUpdate" class="text-muted small"></span>
+    </div>
+    <div class="card-body">
+        <div id="occupiedRoomsContainer">
+            @if (Model != null && Model.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped" id="occupiedRoomsTable">
+                        <thead>
+                            <tr>
+                                <th>Phòng</th>
+                                <th>Tầng</th>
+                                <th>Loại Phòng</th>
+                                <th>Sinh Viên</th>
+                                <th>Email</th>
+                                <th>Check-in</th>
+                                <th>Thời Gian Ở</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var room in Model)
+                            {
+                                <tr>
+                                    <td><strong>@room.RoomNumber</strong></td>
+                                    <td>@room.Floor</td>
+                                    <td>@room.RoomType</td>
+                                    <td>@room.StudentName</td>
+                                    <td>@room.StudentEmail</td>
+                                    <td>@room.CheckInDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@room.DaysOccupied ngày</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    Không có phòng nào đang được sử dụng
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/occupancy")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("UpdateOccupancy", function (rooms) {
+            updateTable(rooms);
+            document.getElementById('lastUpdate').textContent = 'Cập nhật: ' + new Date().toLocaleTimeString('vi-VN');
+        });
+
+        connection.start().then(function () {
+            console.log("SignalR Connected");
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+
+        function updateTable(rooms) {
+            const container = document.getElementById('occupiedRoomsContainer');
+            
+            if (rooms.length === 0) {
+                container.innerHTML = '<div class="alert alert-info mb-0">Không có phòng nào đang được sử dụng</div>';
+                return;
+            }
+
+            let tableHtml = `
+                <div class="table-responsive">
+                    <table class="table table-striped" id="occupiedRoomsTable">
+                        <thead>
+                            <tr>
+                                <th>Phòng</th>
+                                <th>Tầng</th>
+                                <th>Loại Phòng</th>
+                                <th>Sinh Viên</th>
+                                <th>Email</th>
+                                <th>Check-in</th>
+                                <th>Thời Gian Ở</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            rooms.forEach(room => {
+                const checkinDate = new Date(room.checkInDate).toLocaleDateString('vi-VN');
+                tableHtml += `
+                    <tr>
+                        <td><strong>${room.roomNumber}</strong></td>
+                        <td>${room.floor}</td>
+                        <td>${room.roomType}</td>
+                        <td>${room.studentName}</td>
+                        <td>${room.studentEmail}</td>
+                        <td>${checkinDate}</td>
+                        <td>${room.daysOccupied} ngày</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            container.innerHTML = tableHtml;
+        }
+
+        // Update timestamp on page load
+        document.getElementById('lastUpdate').textContent = 'Cập nhật: ' + new Date().toLocaleTimeString('vi-VN');
+    </script>
+}

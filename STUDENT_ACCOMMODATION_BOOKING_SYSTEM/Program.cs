@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Data;
+using STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 builder.Services.AddScoped<AccountRepository>();
+builder.Services.AddScoped<RoomRepository>();
+builder.Services.AddScoped<ReputationService>();
+builder.Services.AddSignalR();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -51,4 +55,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+app.MapHub<OccupancyHub>("/hubs/occupancy");
 app.Run();

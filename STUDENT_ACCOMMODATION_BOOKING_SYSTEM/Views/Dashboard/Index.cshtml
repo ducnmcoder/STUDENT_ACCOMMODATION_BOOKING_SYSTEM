@@ -23,6 +23,13 @@
             <div class="sidebar-section-label">DANH MỤC</div>
             <div class="role-heading">@Model.RoleTitle</div>
             <nav aria-label="Danh mục chính">
+                @if (Model.Role == "ADMIN")
+                {
+                    <a class="nav-entry" href="/admin/rooms"><span class="nav-icon" aria-hidden="true">🏠</span> Quản lý phòng</a>
+                    <a class="nav-entry" href="/admin/statistics"><span class="nav-icon" aria-hidden="true">📊</span> Thống kê sử dụng</a>
+                    <a class="nav-entry" href="/admin/incidents"><span class="nav-icon" aria-hidden="true">⚠️</span> Duyệt sự cố</a>
+                    <a class="nav-entry" href="/admin/occupied-rooms"><span class="nav-icon" aria-hidden="true">📡</span> Phòng đang sử dụng</a>
+                }
                 <a class="nav-entry active" href="@Context.Request.Path"><span class="nav-icon" aria-hidden="true">◫</span> Quản lý thông tin</a>
             </nav>
             <div class="sidebar-bottom">
