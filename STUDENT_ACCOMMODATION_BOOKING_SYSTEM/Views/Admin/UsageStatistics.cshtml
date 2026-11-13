@@ -1,0 +1,110 @@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Thống Kê Sử Dụng";
+}
+
+<div class="dashboard-header">
+    <h2>Thống Kê Sử Dụng Phòng</h2>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Lọc Thống Kê</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="UsageStatistics">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Từ ngày</label>
+                        <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Đến ngày</label>
+                        <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn btn-primary form-control">Xem Thống Kê</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (ViewBag.Statistics != null)
+{
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Thống Kê Theo Phòng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Phòng</th>
+                                    <th>Số Lượt Đặt</th>
+                                    <th>Tổng Số Ngày</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var stat in ViewBag.Statistics)
+                                {
+                                    <tr>
+                                        <td>@stat.RoomNumber</td>
+                                        <td>@stat.BookingCount</td>
+                                        <td>@stat.TotalDays</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Thống Kê Theo Tầng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tầng</th>
+                                    <th>Số Lượt Đặt</th>
+                                    <th>Tổng Số Ngày</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var stat in ViewBag.FloorStatistics)
+                                {
+                                    <tr>
+                                        <td>Tầng @stat.Floor</td>
+                                        <td>@stat.BookingCount</td>
+                                        <td>@stat.TotalDays</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        Chọn khoảng thời gian để xem thống kê
+    </div>
+}

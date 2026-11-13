@@ -1,0 +1,96 @@
+@model STUDENT_ACCOMMODATION_BOOKING_SYSTEM.Models.RoomViewModel
+@{
+    var isEdit = Model.RoomId > 0;
+    ViewData["Title"] = isEdit ? "Chỉnh sửa phòng" : "Thêm phòng mới";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<header class="page-header">
+    <div>
+        <div class="eyebrow dark">@(isEdit ? "CHỈNH SỬA" : "TẠO MỚI")</div>
+        <h1>@ViewData["Title"]</h1>
+        <p>@(isEdit ? "Cập nhật thông tin phòng" : "Tạo phòng mới trong hệ thống")</p>
+    </div>
+</header>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            @Html.AntiForgeryToken()
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="RoomCode" class="form-label">Mã phòng <span class="text-danger">*</span></label>
+                                <input asp-for="RoomCode" class="form-control" required />
+                                <span asp-validation-for="RoomCode" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Building" class="form-label">Tòa nhà <span class="text-danger">*</span></label>
+                                <input asp-for="Building" class="form-control" required />
+                                <span asp-validation-for="Building" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Floor" class="form-label">Tầng <span class="text-danger">*</span></label>
+                                    <input asp-for="Floor" type="number" min="1" max="50" class="form-control" required />
+                                    <span asp-validation-for="Floor" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Capacity" class="form-label">Sức chứa <span class="text-danger">*</span></label>
+                                    <input asp-for="Capacity" type="number" min="1" max="20" class="form-control" required />
+                                    <span asp-validation-for="Capacity" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RoomStatus" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                <select asp-for="RoomStatus" class="form-select" required>
+                                    <option value="AVAILABLE">Khả dụng</option>
+                                    <option value="MAINTENANCE">Bảo trì</option>
+                                    <option value="INACTIVE">Không hoạt động</option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    Chỉ phòng AVAILABLE mới có thể được booking.
+                                </small>
+                                <span asp-validation-for="RoomStatus" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    @(isEdit ? "Cập nhật" : "Tạo phòng")
+                                </button>
+                                <a asp-action="ManageRooms" class="btn btn-outline-secondary">Hủy</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">💡 Hướng dẫn</h5>
+                        <ul class="small mb-0">
+                            <li><strong>Mã phòng:</strong> Ví dụ: A101, B205</li>
+                            <li><strong>Tòa nhà:</strong> Ví dụ: Tòa A, Tòa B</li>
+                            <li><strong>Tầng:</strong> Số tầng từ 1-50</li>
+                            <li><strong>Sức chứa:</strong> Số người tối đa 1-20</li>
+                            <li><strong>Trạng thái AVAILABLE:</strong> Phòng có thể booking</li>
+                            <li><strong>Trạng thái MAINTENANCE:</strong> Phòng đang bảo trì</li>
+                            <li><strong>Trạng thái INACTIVE:</strong> Phòng không sử dụng</li>
+                        </ul>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

@@ -1,0 +1,90 @@
+@using System.Security.Claims
+@{
+    var role = User.FindFirstValue(ClaimTypes.Role) ?? "";
+    var fullName = User.FindFirstValue(ClaimTypes.Name) ?? "User";
+    var roleLabel = role switch {
+        "STUDENT" => "Sinh viên", 
+        "ADMIN" => "Quản trị viên",
+        "FACILITIES_STAFF" => "Nhân viên cơ sở vật chất",
+        "SECURITY_GUARD" => "Nhân viên bảo vệ", 
+        _ => "Thành viên" 
+    };
+    var roleTitle = role switch {
+        "STUDENT" => "STUDENT DASHBOARD",
+        "ADMIN" => "ADMIN DASHBOARD",
+        "FACILITIES_STAFF" => "FACILITIES STAFF DASHBOARD",
+        "SECURITY_GUARD" => "SECURITY GUARD DASHBOARD",
+        _ => "DASHBOARD"
+    };
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] | Student Accommodation</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-shell">
+        <aside class="sidebar">
+            <a class="brand sidebar-brand" href="/"><span class="brand-mark">S</span><span>STUDENT<br />ACCOMMODATION</span></a>
+            <div class="sidebar-section-label">DANH MỤC</div>
+            <div class="role-heading">@roleTitle</div>
+            <nav aria-label="Danh mục chính">
+                @if (role == "ADMIN")
+                {
+                    <a class="nav-entry @(ViewContext.RouteData.Values["action"]?.ToString() == "ManageRooms" ? "active" : "")" 
+                       href="/admin/rooms">
+                        <span class="nav-icon" aria-hidden="true">🏠</span> Quản lý phòng
+                    </a>
+                    <a class="nav-entry @(ViewContext.RouteData.Values["action"]?.ToString() == "UsageStatistics" ? "active" : "")" 
+                       href="/admin/statistics">
+                        <span class="nav-icon" aria-hidden="true">📊</span> Thống kê sử dụng
+                    </a>
+                    <a class="nav-entry @(ViewContext.RouteData.Values["action"]?.ToString() == "ManageIncidents" || ViewContext.RouteData.Values["action"]?.ToString() == "ReviewIncident" ? "active" : "")" 
+                       href="/admin/incidents">
+                        <span class="nav-icon" aria-hidden="true">⚠️</span> Duyệt sự cố
+                    </a>
+                    <a class="nav-entry @(ViewContext.RouteData.Values["action"]?.ToString() == "OccupiedRooms" ? "active" : "")" 
+                       href="/admin/occupied-rooms">
+                        <span class="nav-icon" aria-hidden="true">📡</span> Phòng đang sử dụng
+                    </a>
+                }
+                <a class="nav-entry @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")" 
+                   href="@(role switch { "ADMIN" => "/admin", "STUDENT" => "/student", "FACILITIES_STAFF" => "/facilities-staff", "SECURITY_GUARD" => "/security-guard", _ => "/" })">
+                    <span class="nav-icon" aria-hidden="true">◫</span> Quản lý thông tin
+                </a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="sidebar-user">
+                    <span class="avatar">@fullName.Substring(0, 1).ToUpperInvariant()</span>
+                    <span>
+                        <strong>@fullName</strong>
+                        <small>@roleLabel</small>
+                    </span>
+                </div>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="logout-button">
+                        <span aria-hidden="true">↪</span> Đăng xuất
+                    </button>
+                </form>
+            </div>
+        </aside>
+        <main class="dashboard-content">
+            <div class="topline">
+                <span>KHÔNG GIAN CỦA BẠN</span>
+                <span class="role-pill">@roleLabel</span>
+            </div>
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

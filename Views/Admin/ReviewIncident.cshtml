@@ -1,0 +1,129 @@
+@model dynamic
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Duyệt Sự Cố";
+}
+
+<div class="dashboard-header">
+    <h2>Chi Tiết Sự Cố</h2>
+    <a href="@Url.Action("ManageIncidents")" class="btn btn-secondary">Quay Lại</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Thông Tin Sự Cố</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Mã Sự Cố:</strong> @Model.IncidentId
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Phòng:</strong> @Model.RoomNumber
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Sinh Viên:</strong> @Model.StudentName
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Ngày Báo Cáo:</strong> @Model.ReportedAt.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Loại Tài Sản:</strong> @Model.AssetType
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Mức Độ Nghiêm Trọng:</strong>
+                        @if (Model.Severity == "MINOR")
+                        {
+                            <span class="badge bg-info">Nhẹ</span>
+                        }
+                        else if (Model.Severity == "MODERATE")
+                        {
+                            <span class="badge bg-warning">Trung Bình</span>
+                        }
+                        else if (Model.Severity == "SEVERE")
+                        {
+                            <span class="badge bg-danger">Nghiêm Trọng</span>
+                        }
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Mô Tả:</strong>
+                    <p class="mt-2">@Model.Description</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Trạng Thái:</strong>
+                    @if (Model.ReviewStatus == "PENDING")
+                    {
+                        <span class="badge bg-warning">Chờ Duyệt</span>
+                    }
+                    else if (Model.ReviewStatus == "APPROVED")
+                    {
+                        <span class="badge bg-success">Đã Duyệt</span>
+                    }
+                    else if (Model.ReviewStatus == "REJECTED")
+                    {
+                        <span class="badge bg-danger">Từ Chối</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Duyệt Sự Cố</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.ReviewStatus == "PENDING")
+                {
+                    <form method="post" asp-action="ApproveIncident">
+                        <input type="hidden" name="incidentId" value="@Model.IncidentId" />
+                        <div class="form-group mb-3">
+                            <label>Quyết Định</label>
+                            <select name="decision" class="form-control" required>
+                                <option value="">-- Chọn --</option>
+                                <option value="APPROVED">Chấp Nhận</option>
+                                <option value="REJECTED">Từ Chối</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Điểm Uy Tín Bị Trừ</label>
+                            <input type="number" name="pointsDeducted" class="form-control" min="0" max="100" value="0" />
+                            <small class="form-text text-muted">Nhập 0 nếu không trừ điểm</small>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Ghi Chú Admin</label>
+                            <textarea name="adminNotes" class="form-control" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Xác Nhận</button>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        Sự cố này đã được xử lý
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.AdminNotes))
+                    {
+                        <div class="mt-3">
+                            <strong>Ghi Chú Admin:</strong>
+                            <p class="mt-2">@Model.AdminNotes</p>
+                        </div>
+                    }
+                    @if (Model.PointsDeducted > 0)
+                    {
+                        <div class="mt-3">
+                            <strong>Điểm Trừ:</strong> @Model.PointsDeducted
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

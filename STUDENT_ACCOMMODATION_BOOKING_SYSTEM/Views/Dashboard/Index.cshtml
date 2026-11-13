@@ -42,6 +42,10 @@
                     }
                     @if (Model.Role == "ADMIN")
                     {
+                        <a class="nav-entry" href="/admin/rooms"><span class="nav-icon" aria-hidden="true">🏠</span> Quản lý phòng</a>
+                        <a class="nav-entry" href="/admin/statistics"><span class="nav-icon" aria-hidden="true">📊</span> Thống kê sử dụng</a>
+                        <a class="nav-entry" href="/admin/incidents"><span class="nav-icon" aria-hidden="true">⚠️</span> Duyệt sự cố</a>
+                        <a class="nav-entry" href="/admin/occupied-rooms"><span class="nav-icon" aria-hidden="true">📡</span> Phòng đang sử dụng</a>
                         <a class="nav-entry" asp-controller="Dashboard" asp-action="AdminReputation"><span class="nav-icon" aria-hidden="true">◷</span> Lịch sử điểm</a>
                     }
                     @if (Model.Role == "SECURITY_GUARD")

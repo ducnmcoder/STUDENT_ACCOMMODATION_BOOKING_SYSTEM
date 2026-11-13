@@ -1,0 +1,130 @@
+@model List<dynamic>
+@{
+    ViewData["Title"] = "Duyệt báo cáo thất lạc";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<header class="page-header">
+    <div>
+        <div class="eyebrow dark">QUẢN LÝ SỰ CỐ</div>
+        <h1>⚠️ Duyệt báo cáo sự cố tài sản</h1>
+        <p>Xem xét và duyệt các báo cáo thất lạc, hư hỏng tài sản từ sinh viên</p>
+    </div>
+</header>
+
+        @if (TempData["Success"] is string success)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ✓ @success
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Warning"] is string warning)
+        {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ⚠️ @warning
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (Model.Count == 0)
+        {
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <span style="font-size: 4rem;">✅</span>
+                    </div>
+                    <h4>Không có sự cố chờ duyệt</h4>
+                    <p class="text-muted">Tất cả các báo cáo sự cố đã được xử lý.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <strong>📋 Có @Model.Count sự cố đang chờ duyệt</strong>
+                <br />
+                <small>Chỉ sự cố MISSING (thất lạc) được admin xác nhận mới tự động trừ điểm uy tín sinh viên.</small>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Loại sự cố</th>
+                                    <th>Tài sản</th>
+                                    <th>Phòng</th>
+                                    <th>Người báo cáo</th>
+                                    <th>Thời gian</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var incident in Model)
+                                {
+                                    <tr>
+                                        <td><code>#@incident.IncidentId</code></td>
+                                        <td>
+                                            @{
+                                                string severity = incident.Severity;
+                                                switch (severity)
+                                                {
+                                                    case "MINOR":
+                                                        <span class="badge bg-info">Nhẹ</span>
+                                                        break;
+                                                    case "MODERATE":
+                                                        <span class="badge bg-warning">Trung Bình</span>
+                                                        break;
+                                                    case "SEVERE":
+                                                        <span class="badge bg-danger">Nghiêm Trọng</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-secondary">@severity</span>
+                                                        break;
+                                                }
+                                            }
+                                        </td>
+                                        <td><strong>@incident.AssetType</strong></td>
+                                        <td>@incident.RoomNumber</td>
+                                        <td>@incident.StudentName</td>
+                                        <td>
+                                            <small class="text-muted">
+                                                @incident.ReportedAt.ToString("dd/MM/yyyy HH:mm")
+                                            </small>
+                                        </td>
+                                        <td>
+                                            @{
+                                                string status = incident.ReviewStatus;
+                                                switch (status)
+                                                {
+                                                    case "PENDING":
+                                                        <span class="badge bg-warning">Chờ duyệt</span>
+                                                        break;
+                                                    case "CONFIRMED":
+                                                        <span class="badge bg-success">Đã duyệt</span>
+                                                        break;
+                                                    case "REJECTED":
+                                                        <span class="badge bg-secondary">Từ chối</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-secondary">@status</span>
+                                                        break;
+                                                }
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <a asp-action="ReviewIncident" asp-route-incidentId="@incident.IncidentId" 
+                                               class="btn btn-sm btn-primary">Duyệt</a>
+                                        </td>
+                                    </tr>
+                                }
+            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
