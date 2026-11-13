@@ -62,7 +62,17 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
     public async Task<bool> CheckInAsync(long bookingId, int guardId)
     {
         const string sql = """
+        SET XACT_ABORT ON;
         DECLARE @now datetime2(0) = SYSUTCDATETIME();
+
+        DECLARE @created TABLE
+        (
+            attendance_id bigint,
+            actual_checkin_at datetime2(0),
+            late_minutes int
+        );
+
+        BEGIN TRANSACTION;
 
         INSERT INTO dbo.ATTENDANCE
         (
@@ -73,6 +83,11 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
             recorded_at,
             late_minutes
         )
+        OUTPUT
+            INSERTED.attendance_id,
+            INSERTED.actual_checkin_at,
+            INSERTED.late_minutes
+        INTO @created
         SELECT
             b.booking_id,
             @guardId,
@@ -99,19 +114,58 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
               WHERE a.booking_id = b.booking_id
           );
 
-        SELECT @@ROWCOUNT;
+        DECLARE @attendanceId bigint;
+        DECLARE @lateMinutes int;
+        DECLARE @occurredAt datetime2(0);
+
+        SELECT
+            @attendanceId = attendance_id,
+            @lateMinutes = late_minutes,
+            @occurredAt = actual_checkin_at
+        FROM @created;
+
+        IF @attendanceId IS NOT NULL AND @lateMinutes > 15
+        BEGIN
+            DECLARE @policyId int;
+            DECLARE @penaltyDelta int;
+
+            SELECT TOP (1)
+                @policyId = policy_id,
+                @penaltyDelta = CASE
+                    WHEN @lateMinutes > 30 THEN checkin_over30m_delta
+                    WHEN @lateMinutes > 15 THEN checkin_15m_delta
+                    ELSE 0
+                END
+            FROM dbo.POLICY
+            WHERE effective_from <= @occurredAt
+              AND (effective_to IS NULL OR effective_to > @occurredAt)
+            ORDER BY effective_from DESC, policy_id DESC;
+
+            IF @policyId IS NULL
+                THROW 51016, 'No policy effective at the event time.', 1;
+
+            IF @penaltyDelta <> 0
+            BEGIN
+                EXEC dbo.usp_RecordPenalty
+                    @source_type = 'ATTENDANCE',
+                    @source_id = @attendanceId,
+                    @actor_account_id = @guardId;
+            END
+        END
+
+        COMMIT TRANSACTION;
+
+        SELECT CASE WHEN @attendanceId IS NULL THEN 0 ELSE 1 END;
         """;
 
         await using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync();
 
         await using var command = new SqlCommand(sql, connection);
-
         command.Parameters.AddWithValue("@bookingId", bookingId);
         command.Parameters.AddWithValue("@guardId", guardId);
 
         var result = await command.ExecuteScalarAsync();
-
         return Convert.ToInt32(result) == 1;
     }
 
@@ -119,8 +173,14 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
     {
         const string sql = """
         SET XACT_ABORT ON;
-
         DECLARE @now datetime2(0) = SYSUTCDATETIME();
+
+        DECLARE @created TABLE
+        (
+            checkout_id bigint,
+            actual_checkout_at datetime2(0),
+            late_minutes int
+        );
 
         BEGIN TRANSACTION;
 
@@ -128,18 +188,21 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
         SET booking_status = 'COMPLETED'
         WHERE booking_id = @bookingId
           AND booking_status = 'APPROVED'
-          AND EXISTS (
+          AND EXISTS
+          (
               SELECT 1
               FROM dbo.SECURITY_GUARD
               WHERE account_id = @guardId
           )
-          AND EXISTS (
+          AND EXISTS
+          (
               SELECT 1
               FROM dbo.ATTENDANCE
               WHERE booking_id = @bookingId
                 AND outcome IN ('ON_TIME', 'LATE')
           )
-          AND NOT EXISTS (
+          AND NOT EXISTS
+          (
               SELECT 1
               FROM dbo.CHECKOUT
               WHERE booking_id = @bookingId
@@ -157,6 +220,11 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
                 recorded_at,
                 late_minutes
             )
+            OUTPUT
+                INSERTED.checkout_id,
+                INSERTED.actual_checkout_at,
+                INSERTED.late_minutes
+            INTO @created
             SELECT
                 @bookingId,
                 @guardId,
@@ -168,6 +236,49 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
                 END
             FROM dbo.BOOKING
             WHERE booking_id = @bookingId;
+
+            DECLARE @checkoutId bigint;
+            DECLARE @lateMinutes int;
+            DECLARE @occurredAt datetime2(0);
+
+            SELECT
+                @checkoutId = checkout_id,
+                @lateMinutes = late_minutes,
+                @occurredAt = actual_checkout_at
+            FROM @created;
+
+            IF @checkoutId IS NOT NULL AND @lateMinutes > 0
+            BEGIN
+                DECLARE @policyId int;
+                DECLARE @penaltyDelta int;
+
+                SELECT TOP (1)
+                    @policyId = policy_id,
+                    @penaltyDelta = CASE
+                        WHEN @lateMinutes >= checkout_interval_min
+                        THEN CASE
+                            WHEN (@lateMinutes / checkout_interval_min) * checkout_delta < checkout_cap_delta
+                                THEN checkout_cap_delta
+                            ELSE (@lateMinutes / checkout_interval_min) * checkout_delta
+                        END
+                        ELSE 0
+                    END
+                FROM dbo.POLICY
+                WHERE effective_from <= @occurredAt
+                  AND (effective_to IS NULL OR effective_to > @occurredAt)
+                ORDER BY effective_from DESC, policy_id DESC;
+
+                IF @policyId IS NULL
+                    THROW 51016, 'No policy effective at the event time.', 1;
+
+                IF @penaltyDelta <> 0
+                BEGIN
+                    EXEC dbo.usp_RecordPenalty
+                        @source_type = 'CHECKOUT',
+                        @source_id = @checkoutId,
+                        @actor_account_id = @guardId;
+                END
+            END
         END
 
         COMMIT TRANSACTION;
@@ -183,7 +294,6 @@ public sealed class GuardBookingRepository(IConfiguration configuration)
         command.Parameters.AddWithValue("@guardId", guardId);
 
         var result = await command.ExecuteScalarAsync();
-
         return Convert.ToInt32(result) == 1;
     }
 }
