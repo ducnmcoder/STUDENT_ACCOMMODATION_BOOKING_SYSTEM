@@ -48,6 +48,14 @@
                 </a>
             </nav>
 
+            <div class="sidebar-bottom">
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="logout-button">
+                        <span aria-hidden="true">↪</span> Đăng xuất
+                    </button>
+                </form>
+            </div>
+
         </aside>
 
         <main class="dashboard-content">
